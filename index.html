@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CTF CodeFest 2026 - Cyber War Room</title>
+    <title>SLIIT Codefest 2026 - Cyber War Room</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
@@ -21,10 +21,9 @@
                     },
                     colors: {
                         cyber: {
-                            bg: '#0a0f18',
-                            panel: '#111827',
-                            accent: '#00e5ff',
-                            secondary: '#7c3aed',
+                            dark: '#0f172a',
+                            panel: '#1e293b',
+                            accent: '#06b6d4',
                             green: '#10b981',
                             red: '#ef4444',
                             warning: '#f59e0b'
@@ -35,255 +34,238 @@
         }
     </script>
     <style>
-        body { background-color: #0a0f18; color: #f3f4f6; overflow-x: hidden; }
+        body { background-color: #0f172a; color: #f8fafc; overflow-x: hidden; }
         
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #0a0f18; }
-        ::-webkit-scrollbar-thumb { background: #374151; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #00e5ff; }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #06b6d4; }
 
-        .glow-text { text-shadow: 0 0 10px rgba(0, 229, 255, 0.5); }
+        /* Cyber Aesthetics */
+        .glow-text { text-shadow: 0 0 10px rgba(6, 182, 212, 0.7); }
+        .cyber-border { border: 1px solid #334155; }
         .cyber-card { 
-            background: #111827; 
-            border: 1px solid #374151; 
+            background: #1e293b; 
+            border: 1px solid #334155; 
             border-radius: 0.5rem; 
             transition: all 0.2s ease; 
         }
-        .cyber-card:hover { border-color: #00e5ff; box-shadow: 0 0 15px rgba(0, 229, 255, 0.1); }
+        .cyber-card:hover { border-color: #06b6d4; box-shadow: 0 0 15px rgba(6, 182, 212, 0.2); }
         .cyber-button {
-            background: rgba(0, 229, 255, 0.1);
-            border: 1px solid #00e5ff;
-            color: #00e5ff;
+            background: rgba(6, 182, 212, 0.1);
+            border: 1px solid #06b6d4;
+            color: #06b6d4;
             transition: all 0.2s;
+            cursor: pointer;
         }
-        .cyber-button:hover { background: #00e5ff; color: #0a0f18; box-shadow: 0 0 15px rgba(0, 229, 255, 0.4); }
+        .cyber-button:hover { background: #06b6d4; color: #0f172a; box-shadow: 0 0 15px rgba(6, 182, 212, 0.5); }
+        .cyber-button:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; background: transparent; color: #64748b; border-color: #64748b;}
         
-        .page-section { display: none; animation: fadeIn 0.2s ease-in-out; }
+        /* Layout */
+        .page-section { display: none; animation: fadeIn 0.3s ease-in-out; }
         .page-section.active { display: block; }
         
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .pulse-warning { animation: pulseWarning 2s infinite; }
-        @keyframes pulseWarning { 0% { border-color: #ef4444; } 50% { border-color: transparent; } 100% { border-color: #ef4444; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Flashcard Flip */
+        .flashcard-inner { transition: transform 0.6s; transform-style: preserve-3d; }
+        .flashcard.flipped .flashcard-inner { transform: rotateY(180deg); }
+        .flashcard-front, .flashcard-back { backface-visibility: hidden; position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+        .flashcard-back { transform: rotateY(180deg); }
+
+        /* Speed Bar */
+        #speed-bar-container { width: 100%; height: 8px; background: #334155; border-radius: 4px; overflow: hidden; margin-bottom: 1rem;}
+        #speed-bar { height: 100%; background: #f59e0b; width: 100%; transition: width 1s linear; }
     </style>
 </head>
 <body class="flex h-screen font-sans antialiased text-slate-300">
 
-    <!-- Mobile Menu -->
+    <!-- Mobile Menu Overlay -->
     <div id="mobile-menu" class="fixed inset-0 bg-slate-900/95 z-50 hidden flex-col items-center justify-center space-y-6 text-xl">
         <button onclick="toggleMobileMenu()" class="absolute top-6 right-6 text-slate-400 hover:text-white"><i data-lucide="x" class="w-8 h-8"></i></button>
+        <!-- Mobile Links populated dynamically -->
     </div>
 
-    <!-- Sidebar -->
-    <aside class="w-64 bg-slate-900 border-r border-slate-800 hidden md:flex flex-col h-full shrink-0 z-10 relative shadow-2xl">
-        <div class="p-6 border-b border-slate-800 text-center">
+    <!-- Sidebar (Desktop) -->
+    <aside class="w-64 bg-slate-800 border-r border-slate-700 hidden md:flex flex-col h-full overflow-y-auto shrink-0">
+        <div class="p-6 border-b border-slate-700 text-center">
             <h1 class="text-xl font-black text-white tracking-wider glow-text flex items-center justify-center gap-2">
-                <i data-lucide="crosshair" class="text-cyber-accent"></i> CODEFEST
+                <i data-lucide="shield" class="text-cyber-accent"></i> CODEFEST
             </h1>
-            <p class="text-xs text-cyber-accent mt-1 font-mono">ROUND 1 PREP</p>
+            <p class="text-xs text-cyber-accent mt-1 font-mono">CTF ROUND 1 WAR ROOM</p>
         </div>
-        <nav class="flex-1 overflow-y-auto p-4 space-y-1" id="nav-links">
+        <nav class="flex-1 p-4 space-y-1" id="nav-links">
             <!-- Populated by JS -->
         </nav>
-        <div class="p-4 border-t border-slate-800">
+        <div class="p-4 border-t border-slate-700">
             <button onclick="resetProgress()" class="w-full py-2 text-xs text-slate-500 hover:text-red-400 transition flex items-center justify-center gap-2">
-                <i data-lucide="alert-triangle" class="w-4 h-4"></i> Reset Data
+                <i data-lucide="rotate-ccw" class="w-4 h-4"></i> Reset Progress
             </button>
         </div>
     </aside>
 
     <!-- Main Content -->
-    <main class="flex-1 flex flex-col h-full overflow-hidden bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 to-cyber-bg">
-        <header class="bg-slate-900/50 backdrop-blur border-b border-slate-800 h-16 flex items-center justify-between px-6 shrink-0 z-10">
+    <main class="flex-1 flex flex-col h-full overflow-hidden relative">
+        <!-- Topbar -->
+        <header class="bg-slate-800/50 backdrop-blur border-b border-slate-700 h-16 flex items-center justify-between px-6 shrink-0">
             <div class="flex items-center gap-4">
                 <button onclick="toggleMobileMenu()" class="md:hidden text-slate-400 hover:text-white"><i data-lucide="menu"></i></button>
                 <h2 id="current-page-title" class="text-lg font-bold text-white tracking-wide uppercase">Dashboard</h2>
             </div>
-            <div class="text-sm font-mono text-slate-400 hidden sm:block">
-                Target pace: <span class="text-cyber-accent">72s / question</span>
-            </div>
         </header>
 
+        <!-- Scrollable Content Area -->
         <div class="flex-1 overflow-y-auto p-4 md:p-8 relative" id="content-area">
 
             <!-- 1. DASHBOARD -->
-            <section id="dashboard" class="page-section active max-w-6xl mx-auto space-y-8">
-                
-                <!-- Hero Stats -->
+            <section id="dashboard" class="page-section active space-y-6 max-w-6xl mx-auto">
+                <!-- Countdown -->
+                <div class="cyber-card p-6 text-center border-cyber-accent/50 bg-gradient-to-b from-slate-800 to-slate-900 relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-cyber-accent shadow-[0_0_15px_#06b6d4]"></div>
+                    <h3 class="text-slate-400 font-mono text-sm uppercase mb-2">Countdown to Screening</h3>
+                    <div id="countdown" class="text-3xl md:text-5xl font-black text-white tracking-widest font-mono glow-text">00:00:00:00</div>
+                    <p class="text-sm text-slate-500 mt-2">September 12, 2026</p>
+                </div>
+
+                <!-- Stats Grid -->
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div class="cyber-card p-4 flex items-center gap-4">
-                        <div class="bg-cyber-accent/10 p-3 rounded text-cyber-accent"><i data-lucide="target"></i></div>
-                        <div>
-                            <p class="text-xs text-slate-400 uppercase">Accuracy</p>
-                            <p class="text-2xl font-bold text-white" id="stat-accuracy">0%</p>
-                        </div>
+                    <div class="cyber-card p-4 text-center">
+                        <i data-lucide="target" class="w-6 h-6 text-cyber-accent mx-auto mb-2"></i>
+                        <p class="text-2xl font-bold text-white" id="stat-accuracy">0%</p>
+                        <p class="text-xs text-slate-400 uppercase">Overall Accuracy</p>
                     </div>
-                    <div class="cyber-card p-4 flex items-center gap-4">
-                        <div class="bg-cyber-secondary/10 p-3 rounded text-cyber-secondary"><i data-lucide="check-circle"></i></div>
-                        <div>
-                            <p class="text-xs text-slate-400 uppercase">Completed</p>
-                            <p class="text-2xl font-bold text-white" id="stat-completed">0</p>
-                        </div>
+                    <div class="cyber-card p-4 text-center">
+                        <i data-lucide="check-circle" class="w-6 h-6 text-cyber-green mx-auto mb-2"></i>
+                        <p class="text-2xl font-bold text-white" id="stat-completed">0</p>
+                        <p class="text-xs text-slate-400 uppercase">Qs Completed</p>
                     </div>
-                    <div class="cyber-card p-4 flex items-center gap-4">
-                        <div class="bg-cyber-warning/10 p-3 rounded text-cyber-warning"><i data-lucide="trophy"></i></div>
-                        <div>
-                            <p class="text-xs text-slate-400 uppercase">Best Mock</p>
-                            <p class="text-2xl font-bold text-white" id="stat-best-mock">-</p>
-                        </div>
+                    <div class="cyber-card p-4 text-center">
+                        <i data-lucide="award" class="w-6 h-6 text-purple-400 mx-auto mb-2"></i>
+                        <p class="text-2xl font-bold text-white" id="stat-mocks">0</p>
+                        <p class="text-xs text-slate-400 uppercase">Mocks Done</p>
                     </div>
-                    <div class="cyber-card p-4 flex items-center gap-4 border-cyber-red/30">
-                        <div class="bg-cyber-red/10 p-3 rounded text-cyber-red"><i data-lucide="alert-circle"></i></div>
-                        <div>
-                            <p class="text-xs text-slate-400 uppercase">Weakest</p>
-                            <p class="text-lg font-bold text-white truncate w-24" id="stat-weakest">None</p>
-                        </div>
+                     <div class="cyber-card p-4 text-center border-cyber-warning/30">
+                        <i data-lucide="zap" class="w-6 h-6 text-cyber-warning mx-auto mb-2"></i>
+                        <p class="text-2xl font-bold text-white" id="stat-speed">0</p>
+                        <p class="text-xs text-slate-400 uppercase">Speed Record</p>
                     </div>
                 </div>
 
-                <!-- Action Grid -->
-                <h3 class="text-xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Training Modes</h3>
+                <!-- Actions -->
                 <div class="grid md:grid-cols-3 gap-6">
                     <!-- Standard Practice -->
                     <div class="cyber-card p-6 cursor-pointer hover:-translate-y-1 transition-transform group" onclick="navigate('practice')">
                         <i data-lucide="crosshair" class="w-8 h-8 text-cyber-accent mb-4 group-hover:scale-110 transition"></i>
-                        <h3 class="text-lg font-bold text-white mb-2">Practice Questions</h3>
-                        <p class="text-sm text-slate-400">Filter by topic and difficulty. Learn from detailed explanations.</p>
+                        <h3 class="text-lg font-bold text-white mb-2">Practice Engine</h3>
+                        <p class="text-sm text-slate-400">Filter by topic. Learn from detailed explanations and memory tricks.</p>
                     </div>
                     <!-- Mock Exam -->
-                    <div class="cyber-card p-6 cursor-pointer hover:-translate-y-1 transition-transform group border-cyber-secondary/30 hover:border-cyber-secondary" onclick="startMockExam()">
-                        <i data-lucide="shield-alert" class="w-8 h-8 text-cyber-secondary mb-4 group-hover:scale-110 transition"></i>
-                        <h3 class="text-lg font-bold text-white mb-2">50Q Mock Exam</h3>
-                        <p class="text-sm text-slate-400">60-minute timer. Randomized questions. Simulates the real screening round.</p>
+                    <div class="cyber-card p-6 cursor-pointer hover:-translate-y-1 transition-transform group border-purple-500/30 hover:border-purple-500" onclick="navigate('mock-exams')">
+                        <i data-lucide="shield-alert" class="w-8 h-8 text-purple-500 mb-4 group-hover:scale-110 transition"></i>
+                        <h3 class="text-lg font-bold text-white mb-2">50Q Simulator</h3>
+                        <p class="text-sm text-slate-400">60-minute strict timer. Simulates the real screening round pacing.</p>
                     </div>
                     <!-- Speed Training -->
-                    <div class="cyber-card p-6 cursor-pointer hover:-translate-y-1 transition-transform group border-cyber-warning/30 hover:border-cyber-warning" onclick="startSpeedChallenge()">
+                    <div class="cyber-card p-6 cursor-pointer hover:-translate-y-1 transition-transform group border-cyber-warning/30 hover:border-cyber-warning" onclick="navigate('speed')">
                         <i data-lucide="zap" class="w-8 h-8 text-cyber-warning mb-4 group-hover:scale-110 transition"></i>
-                        <h3 class="text-lg font-bold text-white mb-2">60-Second Challenge</h3>
-                        <p class="text-sm text-slate-400">Train your pace. You have exactly 60 seconds per question.</p>
+                        <h3 class="text-lg font-bold text-white mb-2">60-Second Drill</h3>
+                        <p class="text-sm text-slate-400">Survival mode. You have exactly 60 seconds per question. One wrong answer ends the drill.</p>
                     </div>
                 </div>
-
             </section>
 
-            <!-- 2. PRACTICE ENGINE -->
+            <!-- 2. PRACTICE QUESTIONS -->
             <section id="practice" class="page-section max-w-4xl mx-auto space-y-6">
-                <!-- Filters -->
-                <div id="practice-filters" class="flex flex-col md:flex-row gap-4 bg-slate-900 p-4 rounded-lg border border-slate-800">
-                    <select id="p-topic" class="bg-slate-800 border border-slate-700 text-white rounded p-2 focus:border-cyber-accent outline-none flex-1">
+                <div class="flex flex-col md:flex-row justify-between items-center bg-slate-800 p-4 rounded-lg border border-slate-700 gap-4">
+                    <select id="quiz-filter-topic" class="bg-slate-900 border border-slate-600 text-white rounded p-2 focus:border-cyber-accent outline-none w-full md:w-auto">
                         <option value="all">All Topics</option>
                         <option value="Networking">Networking</option>
-                        <option value="Fundamentals">Fundamentals</option>
+                        <option value="Fundamentals">Cybersecurity Fundamentals</option>
                         <option value="Web">Web Security</option>
                         <option value="Crypto">Cryptography</option>
                         <option value="Linux">Linux</option>
                         <option value="Forensics">Forensics</option>
                     </select>
-                    <select id="p-priority" class="bg-slate-800 border border-slate-700 text-white rounded p-2 focus:border-cyber-accent outline-none flex-1">
-                        <option value="all">All Priorities</option>
-                        <option value="high">High Probability 🔥</option>
-                    </select>
-                    <button onclick="startPractice()" class="cyber-button px-6 py-2 rounded font-bold">START</button>
+                    <button onclick="startPracticeSession()" class="cyber-button px-6 py-2 rounded font-bold w-full md:w-auto">GENERATE 10 Qs</button>
                 </div>
 
-                <!-- Quiz Area -->
-                <div id="practice-area" class="hidden space-y-6">
-                    <div class="flex justify-between items-center text-sm font-mono text-slate-400 border-b border-slate-800 pb-2">
-                        <span id="pr-progress">Q: 1/10</span>
-                        <div class="flex gap-2">
-                            <span id="pr-diff" class="bg-slate-800 px-2 py-1 rounded">Medium</span>
-                            <span id="pr-topic" class="bg-slate-800 px-2 py-1 rounded text-cyber-accent">Web</span>
-                        </div>
+                <!-- Quiz Engine UI -->
+                <div id="quiz-engine" class="hidden space-y-6">
+                    <div class="flex justify-between text-sm font-mono text-slate-400">
+                        <span id="quiz-progress">Question 1 of 10</span>
+                        <span id="quiz-topic-badge" class="bg-slate-700 px-2 py-1 rounded text-cyber-accent">Networking</span>
                     </div>
                     
-                    <div class="cyber-card p-6 md:p-8">
-                        <p id="pr-q-text" class="text-lg md:text-xl font-semibold text-white mb-6">Question goes here?</p>
-                        <div class="grid grid-cols-1 gap-3" id="pr-options">
-                            <!-- Options generated here -->
-                        </div>
+                    <div class="cyber-card p-6 md:p-8 text-lg font-semibold text-white">
+                        <p id="quiz-question">Question text here?</p>
                     </div>
 
-                    <!-- Explanation Area -->
-                    <div id="pr-explanation" class="hidden cyber-card p-6 border-l-4 border-l-cyber-accent bg-slate-800/50 space-y-4">
-                        <div class="flex items-center gap-2 font-bold text-white">
-                            <i data-lucide="info" class="w-5 h-5 text-cyber-accent"></i> Explanation
-                        </div>
-                        <p id="pr-exp-main" class="text-slate-300"></p>
-                        
-                        <div class="bg-slate-900 p-4 rounded text-sm space-y-2" id="pr-exp-others">
-                            <!-- Why others are wrong -->
-                        </div>
+                    <div class="grid grid-cols-1 gap-3" id="quiz-options">
+                        <!-- Options generated here -->
+                    </div>
 
-                        <div class="bg-cyber-warning/10 border border-cyber-warning/30 p-3 rounded text-sm text-cyber-warning flex items-start gap-2">
-                            <i data-lucide="brain" class="w-5 h-5 shrink-0 mt-0.5"></i>
-                            <div>
-                                <strong class="block mb-1">Memory Trick</strong>
-                                <span id="pr-exp-trick">Trick here</span>
-                            </div>
-                        </div>
+                    <div id="quiz-explanation" class="hidden mt-6 p-4 bg-slate-900 border-l-4 border-cyber-accent rounded text-sm space-y-2">
+                        <p class="font-bold text-white flex items-center gap-2"><i data-lucide="info" class="w-4 h-4 text-cyber-accent"></i> Explanation</p>
+                        <p id="quiz-exp-text" class="text-slate-300">Explanation text.</p>
+                        <p id="quiz-exam-tip" class="text-cyber-warning font-mono mt-2 pt-2 border-t border-slate-800 flex items-center gap-2"><i data-lucide="zap" class="w-4 h-4 shrink-0"></i> <span>EXAM TIP: tip here</span></p>
                     </div>
 
                     <div class="flex justify-end mt-4">
-                        <button id="pr-next-btn" onclick="nextPracticeQ()" class="hidden cyber-button px-8 py-3 rounded font-bold flex items-center gap-2">NEXT <i data-lucide="arrow-right" class="w-4 h-4"></i></button>
+                        <button id="quiz-next-btn" onclick="nextQuizQuestion()" class="hidden cyber-button px-8 py-3 rounded font-bold">NEXT QUESTION <i data-lucide="arrow-right" class="inline w-4 h-4 ml-1"></i></button>
                     </div>
                 </div>
             </section>
 
-            <!-- 3. MOCK EXAM SIMULATOR -->
-            <section id="mock-exam" class="page-section max-w-5xl mx-auto h-full flex flex-col">
-                
-                <div id="mock-intro" class="cyber-card p-8 text-center space-y-6 m-auto max-w-2xl">
-                    <i data-lucide="shield-alert" class="w-16 h-16 text-cyber-red mx-auto"></i>
-                    <h2 class="text-3xl font-black text-white">50-QUESTION SIMULATOR</h2>
-                    <div class="text-slate-400 space-y-2 text-sm">
-                        <p>This mode simulates the actual CTF Codefest Round 1 constraints.</p>
-                        <p>You have exactly <strong>60 minutes</strong> to answer <strong>50 randomized questions</strong>.</p>
-                        <p>Answers are not revealed until submission. Target pace: 72 seconds/question.</p>
-                    </div>
-                    <button onclick="initMockExam()" class="bg-cyber-red hover:bg-red-600 text-white px-8 py-4 rounded font-bold text-lg transition w-full shadow-[0_0_20px_rgba(239,68,68,0.3)]">START EXAM</button>
+            <!-- 3. MOCK EXAM -->
+            <section id="mock-exams" class="page-section max-w-5xl mx-auto h-full flex flex-col">
+                <div id="mock-selection" class="cyber-card p-8 text-center max-w-2xl mx-auto mt-10 border-purple-500/50">
+                    <i data-lucide="shield-alert" class="w-16 h-16 text-purple-500 mx-auto mb-4"></i>
+                    <h2 class="text-3xl font-black text-white mb-4">OFFICIAL 50Q SIMULATOR</h2>
+                    <p class="text-slate-400 mb-6">You will have exactly 60 minutes to complete 50 randomized questions pulled from all domains. Answers are not revealed until submission. Target pace: 72s/Q.</p>
+                    <button onclick="startMockExam()" class="bg-purple-600 hover:bg-purple-500 text-white px-8 py-4 rounded font-bold text-lg w-full transition shadow-[0_0_20px_rgba(168,85,247,0.4)]">BEGIN SIMULATION</button>
                 </div>
 
-                <!-- Active Exam Interface -->
-                <div id="mock-active" class="hidden flex-col h-full space-y-4">
+                <!-- Active Exam UI -->
+                <div id="active-mock-ui" class="hidden flex-col h-full space-y-4">
                     <!-- Top Bar -->
-                    <div class="flex justify-between items-center bg-slate-900 p-4 rounded-lg border border-slate-800 shrink-0 shadow-lg">
-                        <div class="flex items-center gap-4">
-                            <div id="mock-timer" class="font-mono text-2xl font-black tracking-widest text-white flex items-center gap-2">
-                                <i data-lucide="timer" class="text-cyber-accent"></i> <span>60:00</span>
+                    <div class="flex justify-between items-center bg-slate-900 p-4 rounded border border-slate-700 shrink-0 shadow-lg">
+                        <div class="flex items-center gap-6">
+                            <div class="font-mono text-2xl font-black tracking-widest text-white flex items-center gap-2" id="mock-timer-container">
+                                <i data-lucide="timer" class="text-cyber-accent"></i> <span id="mock-timer">60:00</span>
                             </div>
-                            <div class="hidden sm:block text-xs text-slate-500 font-mono" id="mock-pace-warning">Pace: OK</div>
+                            <div class="hidden sm:block text-xs font-mono text-slate-500" id="mock-pace">Pace: 0s/Q</div>
                         </div>
-                        <div class="flex gap-4 items-center">
-                            <span class="text-sm font-mono text-slate-400"><span id="mock-answered-count">0</span>/50 Answered</span>
+                        <div class="flex items-center gap-4">
+                            <span class="text-sm font-mono text-slate-400 hidden sm:inline"><span id="mock-answered-count">0</span>/50 Answered</span>
                             <button onclick="confirmSubmitMock()" class="bg-cyber-red hover:bg-red-600 text-white px-4 py-2 rounded font-bold text-sm transition">SUBMIT</button>
                         </div>
                     </div>
 
-                    <!-- Main Split View -->
+                    <!-- Split View -->
                     <div class="flex flex-col md:flex-row gap-6 flex-1 min-h-0">
                         <!-- Navigation Grid -->
-                        <div class="md:w-64 shrink-0 bg-slate-900 border border-slate-800 rounded-lg p-4 flex flex-col gap-2 overflow-y-auto">
-                            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Question Map</h3>
-                            <div class="grid grid-cols-5 gap-2" id="mock-nav-grid">
+                        <div class="md:w-64 shrink-0 bg-slate-900 border border-slate-700 rounded p-4 overflow-y-auto">
+                            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Question Map</h3>
+                            <div class="grid grid-cols-5 gap-2" id="mock-q-nav">
                                 <!-- Generated by JS -->
                             </div>
-                            <div class="mt-auto pt-4 border-t border-slate-800 text-xs text-slate-500 flex flex-col gap-1">
+                            <div class="mt-6 pt-4 border-t border-slate-700 text-xs text-slate-500 space-y-2">
                                 <div class="flex items-center gap-2"><div class="w-3 h-3 bg-slate-700 rounded"></div> Unanswered</div>
                                 <div class="flex items-center gap-2"><div class="w-3 h-3 bg-cyber-accent rounded"></div> Answered</div>
-                                <div class="flex items-center gap-2"><div class="w-3 h-3 bg-cyber-warning rounded"></div> Review Later</div>
+                                <div class="flex items-center gap-2"><div class="w-3 h-3 bg-cyber-warning rounded"></div> Flagged for Review</div>
                             </div>
                         </div>
 
                         <!-- Question Area -->
                         <div class="flex-1 flex flex-col overflow-y-auto">
                             <div class="cyber-card p-6 md:p-8 flex-1 flex flex-col relative">
-                                <!-- Review Toggle -->
-                                <button onclick="toggleMockReview()" id="mock-review-btn" class="absolute top-4 right-4 text-slate-500 hover:text-cyber-warning transition flex items-center gap-1 text-xs font-mono uppercase">
-                                    <i data-lucide="flag" class="w-4 h-4"></i> Flag for review
+                                <button onclick="toggleMockFlag()" id="mock-flag-btn" class="absolute top-4 right-4 text-slate-500 hover:text-cyber-warning transition flex items-center gap-1 text-xs font-mono uppercase">
+                                    <i data-lucide="flag" class="w-4 h-4"></i> Flag
                                 </button>
                                 
                                 <p class="text-sm font-mono text-cyber-accent mb-4">Question <span id="mock-q-num">1</span></p>
-                                <p id="mock-q-text" class="text-lg md:text-xl font-semibold text-white mb-8">Loading...</p>
+                                <h3 class="text-lg md:text-xl font-bold text-white mb-8" id="mock-q-text">Loading...</h3>
                                 
                                 <div class="space-y-3 mt-auto" id="mock-q-options">
                                     <!-- Options here -->
@@ -291,52 +273,37 @@
                             </div>
                             
                             <div class="flex justify-between mt-4 shrink-0">
-                                <button onclick="prevMock()" class="px-6 py-2 bg-slate-800 hover:bg-slate-700 rounded text-white font-bold transition">PREVIOUS</button>
-                                <button onclick="nextMock()" class="px-6 py-2 cyber-button rounded font-bold">NEXT</button>
+                                <button onclick="prevMockQ()" class="px-6 py-2 bg-slate-700 hover:bg-slate-600 rounded text-white font-bold transition">PREVIOUS</button>
+                                <button onclick="nextMockQ()" class="px-6 py-2 cyber-button rounded font-bold">NEXT</button>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <!-- Results Page -->
-                <div id="mock-results" class="hidden space-y-6 pb-12">
-                    <div class="cyber-card p-8 text-center border-cyber-accent relative overflow-hidden">
+                
+                <!-- Results UI -->
+                <div id="mock-results-ui" class="hidden space-y-6 pb-12">
+                    <div class="text-center p-8 cyber-card border-cyber-accent relative overflow-hidden">
                         <div class="absolute top-0 left-0 w-full h-1 bg-cyber-accent"></div>
                         <h2 class="text-3xl font-black text-white mb-2">EXAM COMPLETE</h2>
-                        <div class="text-6xl font-mono font-bold my-6 glow-text" id="res-score-perc">0%</div>
-                        <p class="text-xl text-slate-300 mb-6"><span id="res-score-raw">0</span> / 50 Correct</p>
+                        <div class="text-6xl font-mono text-cyber-accent font-bold my-6 glow-text" id="mock-score-display">0%</div>
+                        <p class="text-xl text-slate-300 mb-6"><span id="mock-score-text">0 / 50 Correct</span></p>
                         
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto text-left">
-                            <div class="bg-slate-900 p-3 rounded border border-slate-800">
+                        <div class="grid grid-cols-3 gap-4 max-w-xl mx-auto text-left">
+                            <div class="bg-slate-900 p-3 rounded border border-slate-700">
                                 <p class="text-xs text-slate-500 uppercase">Time Used</p>
-                                <p class="text-lg font-mono text-white" id="res-time">00:00</p>
+                                <p class="text-lg font-mono text-white" id="mock-res-time">00:00</p>
                             </div>
-                            <div class="bg-slate-900 p-3 rounded border border-slate-800">
+                            <div class="bg-slate-900 p-3 rounded border border-slate-700">
                                 <p class="text-xs text-slate-500 uppercase">Avg Pace</p>
-                                <p class="text-lg font-mono text-white" id="res-pace">0s / Q</p>
+                                <p class="text-lg font-mono text-white" id="mock-res-pace">0s / Q</p>
                             </div>
-                            <div class="bg-slate-900 p-3 rounded border border-slate-800">
+                            <div class="bg-slate-900 p-3 rounded border border-slate-700">
                                 <p class="text-xs text-slate-500 uppercase">Unanswered</p>
-                                <p class="text-lg font-mono text-white" id="res-unans">0</p>
-                            </div>
-                            <div class="bg-slate-900 p-3 rounded border border-slate-800">
-                                <p class="text-xs text-slate-500 uppercase">Status</p>
-                                <p class="text-lg font-bold text-cyber-accent" id="res-status">PASS</p>
+                                <p class="text-lg font-mono text-white" id="mock-res-unans">0</p>
                             </div>
                         </div>
                     </div>
-
-                    <h3 class="text-xl font-bold text-white border-b border-slate-800 pb-2">Topic Analysis</h3>
-                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4" id="res-topics">
-                        <!-- Topic breakdown -->
-                    </div>
-
-                    <h3 class="text-xl font-bold text-white border-b border-slate-800 pb-2 mt-8">Review Mistakes</h3>
-                    <div class="space-y-4" id="res-mistakes">
-                        <!-- Wrong answers review -->
-                    </div>
-                    
-                    <button onclick="navigate('dashboard')" class="cyber-button w-full py-4 rounded font-bold mt-8">RETURN TO DASHBOARD</button>
+                    <button onclick="navigate('dashboard')" class="cyber-button w-full py-4 rounded font-bold text-lg">RETURN TO DASHBOARD</button>
                 </div>
             </section>
 
@@ -345,170 +312,242 @@
                 <div id="speed-intro" class="cyber-card p-8 text-center space-y-4">
                     <i data-lucide="zap" class="w-16 h-16 text-cyber-warning mx-auto"></i>
                     <h2 class="text-3xl font-black text-white">60-SECOND DRILL</h2>
-                    <p class="text-slate-400">You have exactly 60 seconds per question. Learn to parse scenarios and identify correct answers instantly.</p>
-                    <button onclick="initSpeedChallenge()" class="cyber-button px-8 py-4 rounded font-bold w-full mt-4">START DRILL</button>
+                    <p class="text-slate-400">Survival mode. You have exactly 60 seconds per question. Learn to parse scenarios and identify correct answers instantly. One wrong answer ends the drill.</p>
+                    <button onclick="startSpeedChallenge()" class="bg-cyber-warning hover:bg-yellow-500 text-slate-900 px-8 py-4 rounded font-bold w-full mt-4 transition">START DRILL</button>
                 </div>
 
-                <div id="speed-active" class="hidden space-y-6">
+                <div id="speed-active" class="hidden space-y-6 w-full">
                     <div class="flex justify-between items-center mb-2">
                         <span class="text-sm font-mono text-slate-400" id="speed-progress">Score: 0</span>
-                        <span class="text-3xl font-black font-mono text-white" id="speed-timer">60</span>
+                        <span class="text-3xl font-black font-mono text-white" id="speed-timer-text">60</span>
                     </div>
-                    <!-- Timer Bar -->
-                    <div class="h-2 w-full bg-slate-800 rounded overflow-hidden">
-                        <div id="speed-bar" class="h-full bg-cyber-warning transition-all duration-1000 w-full"></div>
-                    </div>
+                    <div id="speed-bar-container"><div id="speed-bar"></div></div>
 
                     <div class="cyber-card p-6 md:p-8 mt-6">
-                        <p id="sp-q-text" class="text-lg md:text-xl font-semibold text-white mb-6"></p>
-                        <div class="grid grid-cols-1 gap-3" id="sp-options"></div>
+                        <p id="speed-q-text" class="text-lg md:text-xl font-semibold text-white mb-6"></p>
+                        <div class="grid grid-cols-1 gap-3" id="speed-options"></div>
                     </div>
                 </div>
                 
                 <div id="speed-results" class="hidden cyber-card p-8 text-center space-y-4 border-cyber-warning">
                     <h2 class="text-2xl font-black text-white">DRILL OVER</h2>
                     <p class="text-slate-400">You survived for:</p>
-                    <p class="text-5xl font-mono text-cyber-warning font-bold" id="speed-final-score">0</p>
+                    <p class="text-6xl font-mono text-cyber-warning font-bold my-4" id="speed-final-score">0</p>
                     <p class="text-sm text-slate-500">Questions Answered Correctly</p>
-                    <button onclick="navigate('dashboard')" class="cyber-button w-full py-3 rounded font-bold mt-4">BACK TO DASHBOARD</button>
+                    <button onclick="navigate('dashboard')" class="cyber-button w-full py-3 rounded font-bold mt-8">BACK TO DASHBOARD</button>
                 </div>
             </section>
-
-            <!-- 5. CHEAT SHEET / REVISION -->
-            <section id="revision" class="page-section max-w-5xl mx-auto space-y-8">
-                <div class="bg-cyber-accent/10 border-l-4 border-cyber-accent p-6 rounded">
-                    <h2 class="text-xl font-bold text-white mb-2">Final Revision Sheet</h2>
-                    <p class="text-slate-400 text-sm">Review this the night before and morning of the exam.</p>
+            
+            <!-- 5. FLASHCARDS -->
+            <section id="flashcards" class="page-section flex flex-col items-center justify-center h-full min-h-[500px]">
+                 <!-- Content is identical to previous version, logic handles the DB -->
+                 <div class="w-full max-w-2xl text-center mb-6 flex justify-between items-center">
+                    <select id="flashcard-category" class="bg-slate-800 border border-slate-600 text-white rounded p-2 focus:border-cyber-accent outline-none">
+                        <option value="all">All Topics</option>
+                        <option value="Networking">Networking</option>
+                        <option value="Fundamentals">Fundamentals</option>
+                        <option value="Web">Web Security</option>
+                        <option value="Crypto">Cryptography</option>
+                        <option value="Linux">Linux</option>
+                    </select>
+                    <p class="text-slate-400 font-mono"><span id="fc-current">1</span> / <span id="fc-total">10</span></p>
                 </div>
-
-                <div class="grid md:grid-cols-2 gap-6">
-                    <!-- TCP/UDP -->
-                    <div class="cyber-card p-5 border-t-2 border-t-blue-500">
-                        <h3 class="font-bold text-white mb-3">TCP vs UDP</h3>
-                        <ul class="text-sm text-slate-300 space-y-2 list-disc pl-4">
-                            <li><strong class="text-cyber-accent">TCP:</strong> Reliable, connection-oriented, guarantees delivery. Uses 3-way handshake (SYN, SYN-ACK, ACK).</li>
-                            <li><strong class="text-cyber-accent">UDP:</strong> Fast, connectionless, no delivery guarantee. Used for DNS, streaming.</li>
-                        </ul>
-                    </div>
-                    <!-- Auth -->
-                    <div class="cyber-card p-5 border-t-2 border-t-purple-500">
-                        <h3 class="font-bold text-white mb-3">Auth & Access</h3>
-                        <ul class="text-sm text-slate-300 space-y-2 list-disc pl-4">
-                            <li><strong class="text-purple-400">Authentication:</strong> Proving WHO you are (e.g., passwords).</li>
-                            <li><strong class="text-purple-400">Authorization:</strong> WHAT you are allowed to do.</li>
-                            <li><strong class="text-purple-400">Least Privilege:</strong> Giving only the minimum access needed.</li>
-                        </ul>
-                    </div>
-                     <!-- Web Vulns -->
-                     <div class="cyber-card p-5 border-t-2 border-t-red-500 md:col-span-2">
-                        <h3 class="font-bold text-white mb-3">Web Security Big 4</h3>
-                        <div class="grid md:grid-cols-2 gap-4 text-sm text-slate-300">
-                            <div><strong class="text-red-400 block">SQL Injection</strong>Unsanitized input hitting the DB. (e.g., ' OR 1=1)</div>
-                            <div><strong class="text-red-400 block">XSS</strong>Malicious JS executing in the victim's browser.</div>
-                            <div><strong class="text-red-400 block">CSRF</strong>Abuses browser auto-sending session cookies.</div>
-                            <div><strong class="text-red-400 block">IDOR</strong>Changing an ID (?user=2) to view others' data.</div>
+                
+                <div class="relative w-full max-w-2xl h-64 md:h-80 perspective-1000 cursor-pointer" onclick="flipCard()" id="flashcard-container">
+                    <div class="flashcard w-full h-full absolute transition-transform duration-500 transform-style-3d" id="flashcard-inner">
+                        <div class="flashcard-front cyber-card flex items-center justify-center p-8 text-center text-xl md:text-2xl font-bold bg-slate-800 border-2 border-slate-600">
+                            <p id="fc-question">Loading...</p>
+                            <p class="absolute bottom-4 text-xs text-slate-500 font-mono">Click to flip</p>
                         </div>
-                    </div>
-                    <!-- Crypto -->
-                    <div class="cyber-card p-5 border-t-2 border-t-green-500 md:col-span-2">
-                        <h3 class="font-bold text-white mb-3">Cryptography Basics</h3>
-                        <div class="grid md:grid-cols-3 gap-4 text-sm text-slate-300">
-                            <div><strong class="text-green-400 block">Encoding (Base64)</strong>Not secure. Reversible by anyone. Ends in =.</div>
-                            <div><strong class="text-green-400 block">Encryption (AES/RSA)</strong>Secure. Reversible ONLY with a key. AES=Symmetric.</div>
-                            <div><strong class="text-green-400 block">Hashing (SHA256)</strong>One-way/Irreversible. Used for passwords/integrity.</div>
+                        <div class="flashcard-back cyber-card flex items-center justify-center p-8 text-center text-lg md:text-xl bg-slate-700 border-2 border-cyber-accent shadow-[0_0_20px_rgba(6,182,212,0.3)]">
+                            <p id="fc-answer" class="text-white">Loading...</p>
                         </div>
                     </div>
                 </div>
+
+                <div class="flex gap-4 mt-8 w-full max-w-2xl">
+                    <button onclick="nextFlashcard()" class="flex-1 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white py-3 rounded font-bold transition">NEXT CARD <i data-lucide="arrow-right" class="inline w-4 h-4 ml-1"></i></button>
+                </div>
+            </section>
+            
+            <!-- 6. CHEAT SHEET / REVISION -->
+            <section id="revision" class="page-section max-w-5xl mx-auto space-y-6">
+                <div class="bg-cyber-warning/10 border-l-4 border-cyber-warning p-4 rounded mb-6">
+                    <h3 class="text-cyber-warning font-bold flex items-center gap-2"><i data-lucide="zap"></i> FINAL 30-MINUTE REVISION</h3>
+                    <p class="text-sm text-slate-300 mt-1">Highest yield facts based on the study guide. Read this in the waiting area.</p>
+                </div>
+                <div class="grid md:grid-cols-2 gap-4" id="quick-rev-cards"></div>
+                <h3 class="text-xl font-bold text-white mt-8 mb-4 border-b border-slate-700 pb-2">100 Things I Must Know</h3>
+                <div class="bg-slate-900 border border-slate-700 rounded-lg p-4 h-[400px] overflow-y-auto font-mono text-sm space-y-2" id="hundred-things-list"></div>
             </section>
 
         </div>
     </main>
 
     <script>
-        lucide.createIcons();
-
-        // --- DATA LAYER (Engineered for AI/CTF MCQ logic) ---
-        // Format: {t: topic, q: question, o: [A, B, C, D] (0 is always correct internally, randomized on render), e: explanation, w: [why_b, why_c, why_d], m: memory_trick, d: diff(1=E,2=M,3=H), p: priority(1=High,2=Med)}
-        
-        const rawDB = [
+        // --- 1. FULL QUESTION DATABASE (Expanded to 50 for realistic Mock Exams) ---
+        const questionDB = [
             // NETWORKING
-            { t: "Networking", d: 1, p: 1, q: "Which protocol is connection-oriented and guarantees ordered delivery?", o: ["TCP", "UDP", "ICMP", "ARP"], e: "TCP establishes a connection via a 3-way handshake and retransmits lost packets to guarantee delivery.", w: ["UDP is connectionless and does not guarantee delivery.", "ICMP is used for diagnostic errors (like ping).", "ARP resolves IP addresses to MAC addresses."], m: "TCP = Totally Certain Protocol (guarantees delivery)." },
-            { t: "Networking", d: 1, p: 1, q: "What is the correct order of the TCP three-way handshake?", o: ["SYN, SYN-ACK, ACK", "ACK, SYN, SYN-ACK", "SYN, ACK, SYN-ACK", "SYN-ACK, SYN, ACK"], e: "The client requests to synchronize (SYN), server acknowledges and syncs back (SYN-ACK), client acknowledges (ACK).", w: ["Wrong order.", "Wrong order.", "Server cannot start with SYN-ACK."], m: "Client always starts and finishes the handshake." },
-            { t: "Networking", d: 2, p: 1, q: "Which OSI layer is responsible for logical addressing and routing between different networks?", o: ["Network (Layer 3)", "Data Link (Layer 2)", "Transport (Layer 4)", "Application (Layer 7)"], e: "Layer 3 (Network) handles IP addresses and routers. Layer 2 handles MAC addresses and switches.", w: ["Handles local MAC addressing.", "Handles ports and TCP/UDP.", "Handles end-user services like HTTP."], m: "Router = IP = Layer 3." },
-            { t: "Networking", d: 1, p: 1, q: "Which port is traditionally used by SSH for encrypted remote logins?", o: ["22", "23", "21", "443"], e: "Port 22 is the standard port for Secure Shell (SSH).", w: ["23 is Telnet (insecure).", "21 is FTP.", "443 is HTTPS."], m: "SSH has 2 'S's -> port 22." },
-            { t: "Networking", d: 2, p: 2, q: "If an IP address starts with 192.168, it is considered:", o: ["A private, non-routable IP", "A loopback address", "A multicast address", "A public, routable IP"], e: "192.168.x.x is a reserved private IP range used within local networks (LANs) and is not routable on the public internet.", w: ["Loopback is 127.0.0.1.", "Multicast is in the 224.x range.", "It cannot be routed publicly without NAT."], m: "192.168 is what your home router uses." },
+            { t: "Networking", d: 1, p: 1, q: "Which protocol is connection-oriented and guarantees ordered delivery?", o: ["UDP", "TCP", "ICMP", "ARP"], a: 1, e: "TCP performs a three-way handshake and retransmits lost packets, guaranteeing ordered delivery.", w: ["UDP is connectionless and does not guarantee delivery.", "ICMP is for diagnostics.", "ARP resolves IP to MAC."], tip: "'Guarantee' + 'connection' = TCP." },
+            { t: "Networking", d: 1, p: 1, q: "What does the 'S' in HTTPS stand for?", o: ["System", "Secure", "Server", "Session"], a: 1, e: "HTTPS = HTTP over a Secure channel (TLS/SSL).", w: ["It does not stand for System.", "It stands for Secure.", "It stands for Secure."], tip: "Don't confuse with SSH." },
+            { t: "Networking", d: 2, p: 1, q: "Which layer of the OSI model does a switch primarily operate at?", o: ["Layer 1", "Layer 2", "Layer 3", "Layer 4"], a: 1, e: "Switches forward frames based on MAC addresses at Layer 2 (Data Link).", w: ["Hubs are Layer 1.", "Routers are Layer 3.", "TCP/UDP are Layer 4."], tip: "Switch = MAC = Layer 2; Router = IP = Layer 3." },
+            { t: "Networking", d: 1, p: 1, q: "Which correctly orders the TCP three-way handshake?", o: ["ACK, SYN, SYN-ACK", "SYN, ACK, SYN-ACK", "SYN, SYN-ACK, ACK", "SYN-ACK, SYN, ACK"], a: 2, e: "Client sends SYN, server replies SYN-ACK, client finishes with ACK.", w: ["Wrong order.", "Wrong order.", "Server cannot initiate with SYN-ACK."], tip: "Client always starts and ends." },
+            { t: "Networking", d: 1, p: 2, q: "Which address is used to uniquely identify a network interface card at Layer 2?", o: ["IP address", "MAC address", "Port number", "Subnet mask"], a: 1, e: "The MAC address is a hardware address burned into the NIC.", w: ["IP is Layer 3.", "Ports are Layer 4.", "Subnet defines network boundaries."], tip: "MAC = physical; IP = logical." },
+            { t: "Networking", d: 1, p: 1, q: "Which service resolves human-readable domain names to IP addresses?", o: ["DHCP", "ARP", "DNS", "NAT"], a: 2, e: "DNS (Domain Name System) translates domain names into IPs.", w: ["DHCP assigns IPs.", "ARP translates IP to MAC.", "NAT translates private/public IPs."], tip: "DNS = Phonebook of the internet." },
+            { t: "Networking", d: 2, p: 1, q: "Which is a private IPv4 address range?", o: ["8.8.8.0/24", "192.168.0.0/16", "1.1.1.0/24", "172.32.0.0/16"], a: 1, e: "192.168.0.0/16 is private. 172.32 is NOT private (ends at 172.31).", w: ["Public Google DNS.", "Cloudflare public.", "Out of bounds for 172 private range."], tip: "Memorize: 10.x, 172.16-31.x, 192.168.x." },
+            { t: "Networking", d: 2, p: 2, q: "What is the main purpose of NAT?", o: ["Encrypt traffic", "Translate private IPs to a public IP", "Assign IP addresses automatically", "Resolve domain names"], a: 1, e: "NAT lets multiple devices share one public IP address.", w: ["VPNs encrypt.", "DHCP assigns.", "DNS resolves."], tip: "NAT = Address Translation." },
+            { t: "Networking", d: 1, p: 1, q: "Which protocol operates on UDP and is commonly used for real-time applications?", o: ["FTP", "TCP", "UDP-based DNS/VoIP", "SSH"], a: 2, e: "UDP prioritizes speed over guaranteed delivery.", w: ["FTP is TCP.", "TCP prioritizes reliability.", "SSH is TCP."], tip: "Speed + tolerance for loss = UDP." },
+            { t: "Networking", d: 1, p: 1, q: "What is the purpose of a firewall?", o: ["Encrypt disk contents", "Filter network traffic based on rules", "Speed up DNS resolution", "Compress packets"], a: 1, e: "A firewall inspects and filters traffic based on rules.", w: ["Disk encryption is separate.", "DNS caching speeds resolution.", "Compression is unrelated."], tip: "Firewall = gatekeeper." },
             
             // FUNDAMENTALS
-            { t: "Fundamentals", d: 1, p: 1, q: "In the CIA Triad, what does 'Integrity' mean?", o: ["Data has not been altered or tampered with by unauthorized parties", "Data is accessible when needed", "Data is hidden from unauthorized users", "Data belongs to a specific user"], e: "Integrity ensures data remains accurate and unchanged. Confidentiality hides it, Availability makes it accessible.", w: ["This describes Availability.", "This describes Confidentiality.", "This relates to Authentication/Identity."], m: "Integrity = Intact." },
-            { t: "Fundamentals", d: 1, p: 1, q: "What is the primary difference between a Virus and a Worm?", o: ["A worm self-replicates and spreads across networks on its own; a virus requires a host file and user action to spread.", "A virus is always destructive; a worm only steals data.", "A worm only attacks Windows; a virus attacks Linux.", "There is no difference; they are synonyms."], e: "Worms are autonomous and spread via network vulnerabilities. Viruses attach to files and wait for a user to run them.", w: ["Both can be destructive or steal data.", "Both exist on all platforms.", "They operate differently."], m: "Worms WIGGLE across the network on their own." },
-            { t: "Fundamentals", d: 2, p: 1, q: "Which of the following describes an 'IDOR' (Insecure Direct Object Reference) vulnerability?", o: ["Changing a parameter like ?user_id=5 to ?user_id=6 to view someone else's account details.", "Injecting SQL commands into a login form.", "Tricking a user into submitting an unwanted HTTP request.", "Uploading a malicious PHP script disguised as an image."], e: "IDOR occurs when an application exposes a reference to an internal object without properly checking if the user is authorized to access it.", w: ["This is SQL Injection.", "This is CSRF.", "This is a file upload vulnerability."], m: "Direct Reference = changing the ID directly." },
-            { t: "Fundamentals", d: 1, p: 1, q: "Authentication vs. Authorization: Which statement is true?", o: ["Authentication verifies WHO you are; Authorization verifies WHAT you are allowed to do.", "Authentication and Authorization are exactly the same thing.", "Authorization requires a password; Authentication requires permissions.", "Authorization happens before Authentication."], e: "You must first authenticate (prove identity), then the system checks your authorization (permissions).", w: ["They are distinct concepts.", "Backwards.", "Authentication always happens first."], m: "AuthN = Name. AuthZ = Zone (where you can go)." },
-            
+            { t: "Fundamentals", d: 1, p: 1, q: "What does the 'A' in the CIA triad stand for?", o: ["Authentication", "Availability", "Authorization", "Anonymity"], a: 1, e: "Availability means systems/data must be accessible when needed.", w: ["Authentication is AAA, not CIA.", "Authorization is AAA.", "Anonymity is separate."], tip: "CIA = Confidentiality, Integrity, Availability." },
+            { t: "Fundamentals", d: 2, p: 1, q: "A vulnerability unknown to the vendor with no patch yet is called:", o: ["A CVE", "A zero-day", "A backdoor", "A rootkit"], a: 1, e: "The vendor has had 'zero days' to fix it.", w: ["CVE is an ID.", "Backdoor is an access method.", "Rootkit hides malware."], tip: "Zero-day = no patch." },
+            { t: "Fundamentals", d: 1, p: 1, q: "Which term describes verifying WHO a user is?", o: ["Authorization", "Accounting", "Authentication", "Auditing"], a: 2, e: "Authentication confirms identity; Authorization determines permissions.", w: ["What you can do.", "Logging actions.", "Reviewing logs."], tip: "AuthN = identity." },
+            { t: "Fundamentals", d: 1, p: 1, q: "Malware disguised as legitimate software is a:", o: ["Worm", "Trojan", "Rootkit", "Botnet"], a: 1, e: "Named after the Trojan Horse.", w: ["Self-replicates.", "Hides deeply.", "Network of infected devices."], tip: "Trojan = disguise." },
+            { t: "Fundamentals", d: 2, p: 1, q: "What distinguishes a worm from a virus?", o: ["Needs a host file", "Self-replicates without user action", "Only affects mobile", "Cannot spread"], a: 1, e: "Worms propagate automatically across networks.", w: ["Virus needs a host.", "Works on PCs.", "Spreads aggressively."], tip: "Worms crawl across the network alone." },
+            { t: "Fundamentals", d: 1, p: 2, q: "Tricking an employee into revealing a password over the phone is:", o: ["Brute force", "Vishing", "SQL injection", "DDoS"], a: 1, e: "Vishing is voice phishing.", w: ["Technical guessing.", "Web exploit.", "Availability attack."], tip: "Vishing = Voice." },
+            { t: "Fundamentals", d: 1, p: 1, q: "Least privilege means:", o: ["Admin rights for all", "Only access needed for the job", "Remove all access", "Encrypt all files"], a: 1, e: "Limits rights to reduce attack surface.", w: ["Dangerous.", "Breaks availability.", "Separate concept."], tip: "Minimum necessary access." },
+            { t: "Fundamentals", d: 1, p: 1, q: "A DDoS attack differs from DoS because:", o: ["Uses encryption", "Multiple distributed sources", "Only targets DBs", "Is legal"], a: 1, e: "Distributed means many machines (often a botnet) attacking at once.", w: ["Not encryption based.", "Targets any service.", "Illegal."], tip: "Distributed = many sources." },
+            { t: "Fundamentals", d: 2, p: 1, q: "Trying every possible password combination systematically is:", o: ["Password spraying", "Brute force attack", "Credential stuffing", "Dictionary attack"], a: 1, e: "Brute force tries all combinations.", w: ["Few passwords, many accounts.", "Reusing leaked credentials.", "Using a wordlist."], tip: "Brute force = ALL combinations." },
+            { t: "Fundamentals", d: 1, p: 1, q: "An attacker secretly intercepting communication is:", o: ["Phishing", "MITM", "SQL Injection", "Ransomware"], a: 1, e: "Man-in-the-Middle (MITM) eavesdrops or alters data.", w: ["Deception.", "Database attack.", "Encrypts files for money."], tip: "MITM = in the middle." },
+
             // WEB SECURITY
-            { t: "Web", d: 1, p: 1, q: "Which attack injects malicious JavaScript into a web page to execute in the victim's browser?", o: ["Cross-Site Scripting (XSS)", "SQL Injection (SQLi)", "Cross-Site Request Forgery (CSRF)", "Server-Side Request Forgery (SSRF)"], e: "XSS specifically targets the victim's browser by injecting executable client-side scripts.", w: ["Targets the database backend.", "Abuses session cookies, doesn't inject code.", "Tricks the server into making requests."], m: "XSS executes in the browSer." },
-            { t: "Web", d: 2, p: 1, q: "What is the main goal of a CSRF attack?", o: ["To force a logged-in user to execute unwanted actions on a web application without their knowledge.", "To steal data directly from the backend database.", "To decrypt the user's password hash.", "To perform a denial of service against the web server."], e: "CSRF tricks the browser into sending a request (using stored session cookies) to perform a state-changing action (like transferring funds).", w: ["SQLi does this.", "Password cracking does this.", "DDoS does this."], m: "CSRF Forges a Request from the victim." },
-            { t: "Web", d: 1, p: 1, q: "What does an HTTP 403 status code indicate?", o: ["Forbidden: The server understands the request but refuses to authorize it.", "Not Found: The requested resource does not exist.", "Unauthorized: The client must authenticate itself.", "Internal Server Error: The server encountered a generic error."], e: "403 means you are logged in (or recognized), but you lack the permissions to view the page. 401 means you aren't logged in.", w: ["This is 404.", "This is 401.", "This is 500."], m: "403 = I know who you are, but you are FORBIDDEN." },
-            { t: "Web", d: 3, p: 2, q: "A path traversal attack typically utilizes which character sequence?", o: ["../", " ' OR 1=1", "<script>", "&&"], e: "Path traversal uses dot-dot-slash (../) sequences to move up directory structures and access unintended files (like /etc/passwd).", w: ["SQL Injection payload.", "XSS payload.", "Command injection payload."], m: "../ moves UP a directory." },
-            
+            { t: "Web", d: 1, p: 1, q: "Which vulnerability allows injecting malicious SQL?", o: ["XSS", "CSRF", "SQL Injection", "SSRF"], a: 2, e: "Unsanitized input alters the backend database query.", w: ["Targets browser.", "Abuses cookies.", "Forces server requests."], tip: "Input reaching database = SQLi." },
+            { t: "Web", d: 2, p: 1, q: "Stored XSS differs from Reflected XSS because:", o: ["Saved on server and served to multiple victims", "Only affects attacker", "More dangerous technically", "Requires a database"], a: 0, e: "Stored persists on the server; Reflected executes via a crafted link immediately.", w: ["Affects victims.", "Not inherently more dangerous technically, just wider spread.", "Can be stored in files, not just DBs."], tip: "Stored = persistent." },
+            { t: "Web", d: 2, p: 1, q: "IDOR stands for:", o: ["Insecure Direct Object Reference", "Internal Data Retrieval", "Indirect Domain Request", "Injected Data Response"], a: 0, e: "Exposing a reference (like an ID) without access checks.", w: ["Fake term.", "Fake term.", "Fake term."], tip: "?id=123 to ?id=124 = IDOR." },
+            { t: "Web", d: 3, p: 1, q: "CSRF exploits the fact that:", o: ["Browsers automatically send cookies to a site", "Servers don't validate input", "Passwords are plaintext", "DNS is spoofed"], a: 0, e: "Tricks browser into sending an unwanted request using attached session cookies.", w: ["Input validation is separate.", "Auth storage is separate.", "Networking attack."], tip: "CSRF abuses automatic cookie behavior." },
+            { t: "Web", d: 1, p: 1, q: "Which HTTP method is typically used to create a new resource?", o: ["GET", "POST", "HEAD", "OPTIONS"], a: 1, e: "POST submits data to create/modify.", w: ["Retrieves data.", "Retrieves headers only.", "Checks allowed methods."], tip: "POST = Submit/Create." },
+            { t: "Web", d: 3, p: 2, q: "SSRF allows an attacker to:", o: ["Steal cookies", "Make the server send requests to internal systems", "Crash the DB", "Bypass JS validation"], a: 1, e: "Tricks the SERVER into making requests to restricted areas.", w: ["XSS steals cookies.", "DoS crashes DBs.", "Intercepting proxies bypass JS."], tip: "SSRF = Server makes the request." },
+            { t: "Web", d: 1, p: 1, q: "A 403 HTTP status code means:", o: ["Doesn't exist", "Authenticated but forbidden", "Server crashed", "Success"], a: 1, e: "Server understands request but refuses to authorize.", w: ["404.", "500.", "200."], tip: "403 = I know you, but no." },
+            { t: "Web", d: 1, p: 1, q: "Path traversal attacks use which pattern?", o: ["<script>", "' OR 1=1", "../../../", "%3Cimg%3E"], a: 2, e: "Moves up directory levels to access outside files.", w: ["XSS payload.", "SQLi payload.", "URL encoded XSS."], tip: "../ = moving up directories." },
+            { t: "Web", d: 2, p: 2, q: "Why is client-side validation insufficient?", o: ["Too slow", "Attackers can bypass it by sending requests directly to the server", "Only works in Chrome", "Requires a database"], a: 1, e: "Runs in the browser; can be bypassed via proxies like Burp.", w: ["It's very fast.", "Works in all browsers.", "Doesn't need DB."], tip: "Always validate on the backend." },
+            { t: "Web", d: 2, p: 1, q: "Which best describes Broken Access Control?", o: ["Weak hashing", "Users performing unauthorized actions", "Server crashing", "Outdated TLS"], a: 1, e: "Failing to properly enforce permissions.", w: ["Crypto failure.", "Availability failure.", "Crypto failure."], tip: "OWASP #1 - Permission enforcement." },
+
             // CRYPTOGRAPHY
-            { t: "Crypto", d: 1, p: 1, q: "Which of the following is an ENCODING scheme, not encryption?", o: ["Base64", "AES", "RSA", "SHA-256"], e: "Base64 is used to encode binary data into ASCII text. It requires no key and is easily reversed by anyone. It provides zero security.", w: ["AES is symmetric encryption.", "RSA is asymmetric encryption.", "SHA is hashing."], m: "Base64 is just a format change, not a lock." },
-            { t: "Crypto", d: 2, p: 1, q: "Why is hashing used for storing passwords instead of encryption?", o: ["Hashing is one-way and irreversible, meaning stolen hashes cannot be 'decrypted' back to passwords.", "Hashing is much faster than encryption.", "Encryption requires an internet connection.", "Hashing uses smaller file sizes."], e: "Because hashing is irreversible, a leaked database of hashes doesn't immediately reveal user passwords. The system only needs to compare hashes, never decrypt them.", w: ["Actually, password hashing algorithms are intentionally made SLOW to deter brute-forcing.", "Nonsense distractor.", "Size isn't the primary security reason."], m: "You can't un-bake a cake (hash)." },
-            { t: "Crypto", d: 2, p: 1, q: "What is the purpose of 'salting' a password hash?", o: ["To ensure that two users with the same password have completely different hashes.", "To encrypt the hash so it cannot be read.", "To compress the database size.", "To make the hash reversible for administrators."], e: "A salt is random data added to the password before hashing. This defeats precomputed 'rainbow table' attacks.", w: ["Salting doesn't encrypt the hash.", "It increases size slightly.", "Hashes remain irreversible."], m: "Salt makes every hash taste unique." },
-            { t: "Crypto", d: 3, p: 2, q: "In asymmetric cryptography, which key is used to verify a digital signature?", o: ["The sender's public key", "The sender's private key", "A shared symmetric key", "The receiver's private key"], e: "A sender signs a document using their PRIVATE key. Anyone can verify that signature using the sender's PUBLIC key.", w: ["Signing uses the private key.", "Asymmetric doesn't use shared keys.", "Receiver keys aren't used to verify sender signatures."], m: "Sign with private (only you can), verify with public (everyone can)." },
+            { t: "Crypto", d: 1, p: 1, q: "A string ending in '=' using A-Z, a-z, 0-9, + and / is likely:", o: ["MD5", "Base64", "AES", "SHA-256"], a: 1, e: "Signature of Base64 encoding.", w: ["Hex only.", "Ciphertext is binary.", "Hex only."], tip: "'==' = Base64." },
+            { t: "Crypto", d: 2, p: 1, q: "Which of these is irreversible by design?", o: ["Base64", "AES", "Hashing", "ROT13"], a: 2, e: "Hash functions are one-way.", w: ["Encoding.", "Encryption.", "Substitution cipher."], tip: "Irreversible = Hashing." },
+            { t: "Crypto", d: 2, p: 1, q: "Why should passwords be hashed, not encrypted?", o: ["Faster", "Prevents recovery even if database is stolen", "Encryption is illegal", "Uses less storage"], a: 1, e: "You only need to verify matches, not recover originals.", w: ["Not always faster.", "False.", "Similar size."], tip: "Verify matches, don't decrypt." },
+            { t: "Crypto", d: 2, p: 1, q: "What is the purpose of 'salt' in hashing?", o: ["Make it reversible", "Add random data to defeat rainbow tables", "Encrypt the hash", "Shorten the hash"], a: 1, e: "Ensures identical passwords yield different hashes.", w: ["Cannot reverse a hash.", "Hashes are not encrypted.", "Increases size slightly."], tip: "Salt defeats rainbow tables." },
+            { t: "Crypto", d: 3, p: 1, q: "In asymmetric crypto, which key verifies a signature?", o: ["Signer's private key", "Signer's public key", "Shared symmetric key", "Random session key"], a: 1, e: "Sign with private, anyone verifies with public.", w: ["Used to sign.", "Not asymmetric.", "Used in TLS payload."], tip: "Sign = Private. Verify = Public." },
+            { t: "Crypto", d: 2, p: 1, q: "Which is a symmetric algorithm?", o: ["RSA", "AES", "ECC", "Diffie-Hellman"], a: 1, e: "AES uses the same key to encrypt and decrypt.", w: ["Asymmetric.", "Asymmetric.", "Key exchange protocol."], tip: "AES = Symmetric." },
+            { t: "Crypto", d: 1, p: 2, q: "ROT13 is an example of:", o: ["Hashing", "Classical substitution cipher", "Symmetric cipher", "Asymmetric cipher"], a: 1, e: "Rotates letters by 13 positions.", w: ["Not one-way.", "Too simple to be modern cipher.", "Requires key pair."], tip: "Apply twice to reverse." },
+            { t: "Crypto", d: 1, p: 1, q: "What does TLS provide for web traffic?", o: ["Speed", "Encryption and integrity in transit", "SEO", "Malware removal"], a: 1, e: "TLS (the S in HTTPS) encrypts the connection.", w: ["Adds slight overhead.", "Not SEO primary.", "Doesn't scan payload."], tip: "TLS = Encryption in transit." },
+            { t: "Crypto", d: 2, p: 1, q: "Which hash is considered cryptographically broken?", o: ["SHA-256", "SHA-512", "MD5", "bcrypt"], a: 2, e: "MD5 has known collision vulnerabilities.", w: ["Secure.", "Secure.", "Secure for passwords."], tip: "MD5 = Broken." },
+            { t: "Crypto", d: 2, p: 2, q: "XOR encryption is popular in CTFs because:", o: ["Unbreakable", "Simple, reversible with the same key", "No key needed", "Identical to AES"], a: 1, e: "XOR-ing twice recovers data.", w: ["Very breakable.", "Needs a key.", "AES is complex."], tip: "XOR twice = original data." },
 
-            // LINUX & FORENSICS
-            { t: "Linux", d: 1, p: 1, q: "Which Linux command is used to extract human-readable text from a binary file?", o: ["strings", "cat", "grep", "file"], e: "'strings' scans binary files and prints sequences of printable characters. It's heavily used in CTF forensics.", w: ["cat will print garbage/crash the terminal on binaries.", "grep searches text, doesn't extract from binary well.", "file identifies the type of file."], m: "Pulls the 'strings' of text out of the binary mess." },
-            { t: "Forensics", d: 2, p: 1, q: "If you rename a PNG image to 'document.txt', how will the Linux 'file' command identify it?", o: ["As a PNG image data file", "As an ASCII text file", "It will return an error", "As an executable"], e: "The 'file' command reads the file's 'magic bytes' (header content), completely ignoring the file extension.", w: ["It ignores the .txt extension.", "It won't error, it reads the header.", "It's not an executable."], m: "The 'file' command looks inside, not at the name." },
-            { t: "Linux", d: 2, p: 2, q: "What permissions does 'chmod 644' grant to a file?", o: ["Owner: Read/Write, Group/Others: Read only", "Everyone: Read/Write", "Owner: Full access, Others: None", "Owner: Execute only"], e: "6 = 4(read) + 2(write). 4 = 4(read). Therefore: Owner gets RW, Group gets R, Others get R.", w: ["Would be 666.", "Would be 700.", "Would be 100."], m: "4=Read, 2=Write, 1=Execute." },
-            { t: "Forensics", d: 3, p: 2, q: "You find a suspicious file starting with the hex bytes '25 50 44 46'. What type of file is this?", o: ["A PDF document", "A JPEG image", "A ZIP archive", "A PNG image"], e: "25 50 44 46 translates to '%PDF' in ASCII, which is the magic byte signature for PDF files.", w: ["JPEG is FF D8 FF.", "ZIP is 50 4B 03 04.", "PNG is 89 50 4E 47."], m: "25 50 44 46 = %PDF." }
+            // LINUX
+            { t: "Linux", d: 1, p: 1, q: "Which command extracts readable text from a binary?", o: ["cat", "strings", "chmod", "top"], a: 1, e: "Scans for printable character sequences.", w: ["Prints garbage on binaries.", "Changes permissions.", "Process monitor."], tip: "First step for unknown binaries." },
+            { t: "Linux", d: 2, p: 1, q: "What does chmod 755 grant?", o: ["Owner: rwx; Group/Other: r-x", "Owner: r; Other: none", "Everyone full access", "Owner exec only"], a: 0, e: "7=4+2+1, 5=4+1.", w: ["Would be 400.", "Would be 777.", "Would be 100."], tip: "4=r, 2=w, 1=x." },
+            { t: "Linux", d: 1, p: 1, q: "Which command identifies file type via magic bytes?", o: ["ls", "file", "find", "grep"], a: 1, e: "Inspects header content, ignoring extensions.", w: ["Lists names.", "Searches paths.", "Searches text inside."], tip: "Find true type = file." },
+            { t: "Linux", d: 1, p: 1, q: "What redirects output to OVERWRITE a file?", o: ["|", ">>", ">", "<"], a: 2, e: "> overwrites, >> appends.", w: ["Pipe.", "Append.", "Input redirect."], tip: "> destroys old data." },
+            { t: "Linux", d: 1, p: 1, q: "Command to show currently running processes (snapshot)?", o: ["ps", "cd", "pwd", "chmod"], a: 0, e: "ps shows process snapshot; top is live.", w: ["Change dir.", "Print dir.", "Change perms."], tip: "ps = process snapshot." },
+            { t: "Linux", d: 1, p: 2, q: "Directory typically storing system config files?", o: ["/tmp", "/etc", "/home", "/bin"], a: 1, e: "/etc holds global configurations.", w: ["Temp files.", "User data.", "Binaries."], tip: "/etc = editable text configs." },
+            { t: "Linux", d: 2, p: 1, q: "Search recursively for 'flag' inside files?", o: ["find flag", "grep -r 'flag' .", "ls -r flag", "cat flag"], a: 1, e: "grep -r searches contents of files in all subdirs.", w: ["Searches filenames.", "Lists backwards.", "Prints one file."], tip: "grep = inside files." },
+            { t: "Linux", d: 1, p: 1, q: "Function of 'sudo'?", o: ["Encrypt", "Run command with root privileges", "Delete permanently", "Compress"], a: 1, e: "Superuser DO.", w: ["gpg.", "rm -rf.", "tar/gzip."], tip: "sudo = temporary admin." },
+            { t: "Linux", d: 1, p: 1, q: "Pipes output of cmd1 into cmd2?", o: ["cmd1 > cmd2", "cmd1 | cmd2", "cmd1 && cmd2", "cmd1 -- cmd2"], a: 1, e: "The pipe symbol connects stdout to stdin.", w: ["File redirect.", "Conditional execution.", "Argument separator."], tip: "| chains commands." },
+            { t: "Linux", d: 2, p: 2, q: "What does PATH control?", o: ["Current dir", "Directories shell searches for executables", "Home dir", "IP address"], a: 1, e: "List of folders checked when a command is typed.", w: ["pwd.", "$HOME.", "ip a."], tip: "'Command not found' = not in PATH." },
+
+            // FORENSICS & RECON
+            { t: "Forensics", d: 2, p: 1, q: "What are 'magic bytes'?", o: ["Random keys", "First bytes identifying true file type", "Malware signature", "AV bytes"], a: 1, e: "Signature at start of file (e.g., 89 50 4E 47 for PNG).", w: ["No.", "Not specific to malware.", "No."], tip: "Magic bytes ignore extensions." },
+            { t: "Forensics", d: 1, p: 1, q: "Analyzed with Wireshark?", o: ["DOCX", "PCAP", "XLSX", "EXE"], a: 1, e: "Packet captures.", w: ["Word.", "Excel.", "Executable."], tip: "Wireshark reads PCAPs." },
+            { t: "Forensics", d: 1, p: 1, q: "EXIF data reveals:", o: ["Color palette", "Metadata (camera, GPS, time)", "File size", "Nothing"], a: 1, e: "Embedded info in images.", w: ["Not main use.", "It's highly useful.", "Not just size."], tip: "EXIF = image metadata." },
+            { t: "Forensics", d: 1, p: 1, q: "Steganography is:", o: ["Encrypting unreadable", "Hiding existence of data inside another file", "Compressing", "Malware"], a: 1, e: "Hides data in plain sight (e.g., in image pixels).", w: ["Crypto.", "Zip.", "No."], tip: "Hides EXISTENCE." },
+            { t: "Forensics", d: 1, p: 1, q: "Identify passive OSINT tool for domain registration?", o: ["Nmap", "Whois", "Ghidra", "John"], a: 1, e: "Queries public domain ownership databases.", w: ["Active scanner.", "Reverse engineering.", "Password cracking."], tip: "Whois = Domain owner." },
+            { t: "Forensics", d: 2, p: 1, q: "Passive vs active recon?", o: ["Passive interacts, active doesn't", "Passive uses public info without touching target directly", "No difference", "Active is illegal"], a: 1, e: "Active probes the target (can be logged).", w: ["Backwards.", "Big difference.", "Not always."], tip: "Passive = no logs on target." },
+            { t: "Forensics", d: 1, p: 1, q: "Nmap is primarily for:", o: ["Password cracking", "Scanning for hosts/ports/services", "Editing binaries", "Hiding data"], a: 1, e: "Network Mapper.", w: ["John.", "Hex editor.", "Stego."], tip: "Nmap = port scanner." },
+            { t: "Forensics", d: 2, p: 2, q: ".zip fails to open normally in CTF?", o: ["Corrupted download", "Possible appended hidden data or wrong magic bytes", "Unexaminable", "Virus"], a: 1, e: "CTF files are often manipulated deliberately.", w: ["Rarely just corrupted.", "False.", "Not necessarily."], tip: "Broken file = check magic bytes." },
+            { t: "Forensics", d: 1, p: 1, q: "Gobuster is used to:", o: ["Decrypt", "Brute-force hidden web directories", "Disassemble", "Analyze packets"], a: 1, e: "Directory and DNS brute-forcer.", w: ["Hashcat.", "Ghidra.", "Wireshark."], tip: "Gobuster finds hidden paths." },
+            { t: "Forensics", d: 1, p: 1, q: "Common source of passive OSINT?", o: ["Logging into server", "Social media & public records", "Exploiting", "Phishing"], a: 1, e: "Requires no direct contact with target systems.", w: ["Active/Illegal.", "Active.", "Active."], tip: "Passive = Google, LinkedIn, Whois." }
         ];
 
-        // Ensure exactly 4 options and randomized internally, but correct answer must be tracked.
-        let questionBank = [];
-        
-        function initData() {
-            questionBank = rawDB.map((q, idx) => {
-                let options = q.o.map((text, i) => ({ text, isCorrect: i === 0, exp: i === 0 ? "" : q.w[i-1] }));
-                // Shuffle options
-                options.sort(() => Math.random() - 0.5);
-                return {
-                    id: idx,
-                    topic: q.t,
-                    diff: q.d,
-                    priority: q.p,
-                    text: q.q,
-                    options: options,
-                    explanation: q.e,
-                    trick: q.m
-                };
-            });
-        }
-
-        // --- UI & NAVIGATION ---
-        const navItems = [
-            { id: 'dashboard', icon: 'layout-dashboard', label: 'Dashboard' },
-            { id: 'practice', icon: 'crosshair', label: 'Practice Mode' },
-            { id: 'mock-exam', icon: 'shield-alert', label: 'Mock Exam' },
-            { id: 'speed', icon: 'zap', label: 'Speed Drill' },
-            { id: 'revision', icon: 'book-open', label: 'Cheat Sheet' }
+        const flashcardsDB = [
+            { q: "What is port 22 used for?", a: "SSH (Secure Shell) - encrypted remote login.", t: "Networking" },
+            { q: "Difference between TCP and UDP?", a: "TCP is reliable/connection-oriented. UDP is fast/connectionless.", t: "Networking" },
+            { q: "What does CIA stand for?", a: "Confidentiality, Integrity, Availability", t: "Fundamentals" },
+            { q: "What is an IDOR vulnerability?", a: "Insecure Direct Object Reference (changing ID parameter to see others' data).", t: "Web" },
+            { q: "What is SQL Injection?", a: "Unsanitized user input executes in backend database query.", t: "Web" },
+            { q: "Is Base64 encryption?", a: "No. It is ENCODING. Reversible by anyone, no key required.", t: "Cryptography" },
+            { q: "Difference between Hashing and Encryption?", a: "Hashing is irreversible (one-way). Encryption is reversible with a key.", t: "Cryptography" },
+            { q: "What does 'chmod 644' do?", a: "Owner: read/write. Group/Others: read-only.", t: "Linux" },
+            { q: "What are Magic Bytes?", a: "File signatures at the start of a file revealing its true format.", t: "Forensics" }
         ];
 
-        let state = JSON.parse(localStorage.getItem('codefest_state')) || {
-            stats: { answered: 0, correct: 0, mocks: 0, bestMock: 0, speedHigh: 0 },
-            topicData: { 'Networking': [0,0], 'Fundamentals': [0,0], 'Web': [0,0], 'Crypto': [0,0], 'Linux': [0,0], 'Forensics': [0,0] },
-            mistakes: []
+        // --- 2. STATE MANAGEMENT & INIT ---
+        let state = {
+            stats: { answered: 0, correct: 0, mocks: 0, speedHigh: 0, streak: 1 },
+            roadmap: {},
+            topicScores: { 'Networking': [0,0], 'Fundamentals': [0,0], 'Web': [0,0], 'Crypto': [0,0], 'Linux': [0,0], 'Forensics': [0,0] }
         };
 
+        function loadState() {
+            try {
+                const saved = localStorage.getItem('codefest_warroom_v2');
+                if(saved) state = JSON.parse(saved);
+            } catch (e) {
+                console.error("LocalStorage corrupted. Starting clean.");
+            }
+            updateDashboardStats();
+        }
+
         function saveState() {
-            localStorage.setItem('codefest_state', JSON.stringify(state));
-            updateDashboard();
+            localStorage.setItem('codefest_warroom_v2', JSON.stringify(state));
+            updateDashboardStats();
         }
 
         function resetProgress() {
-            if(confirm("Wipe all training data?")) {
-                localStorage.removeItem('codefest_state');
+            if(confirm("Are you sure? This deletes all progress.")){
+                localStorage.removeItem('codefest_warroom_v2');
                 location.reload();
             }
+        }
+
+        // --- 3. UI NAVIGATION ---
+        const navItems = [
+            { id: 'dashboard', icon: 'layout-dashboard', label: 'Dashboard' },
+            { id: 'practice', icon: 'crosshair', label: 'Practice Engine' },
+            { id: 'mock-exams', icon: 'shield-alert', label: '50Q Mock Exam' },
+            { id: 'speed', icon: 'zap', label: 'Speed Drill' },
+            { id: 'flashcards', icon: 'layers', label: 'Flashcards' },
+            { id: 'revision', icon: 'book-open', label: 'Cheat Sheet' },
+            { id: 'team', icon: 'users', label: 'Team Strategy' }
+        ];
+
+        function initNav() {
+            const container = document.getElementById('nav-links');
+            const mobileContainer = document.getElementById('mobile-menu');
+            
+            navItems.forEach(item => {
+                const btnHtml = `<button onclick="navigate('${item.id}')" id="nav-${item.id}" class="w-full flex items-center gap-3 px-4 py-3 rounded text-slate-400 hover:bg-slate-700/50 hover:text-white transition-colors text-left font-semibold">
+                    <i data-lucide="${item.icon}" class="w-5 h-5 shrink-0"></i> <span>${item.label}</span>
+                </button>`;
+                container.innerHTML += btnHtml;
+                mobileContainer.innerHTML += btnHtml;
+            });
+            lucide.createIcons();
+        }
+
+        function navigate(pageId) {
+            document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            
+            document.querySelectorAll('#nav-links button, #mobile-menu button').forEach(el => {
+                el.classList.remove('bg-cyber-accent/10', 'text-cyber-accent', 'border-r-4', 'border-cyber-accent');
+            });
+            const activeNav = document.getElementById(`nav-${pageId}`);
+            if(activeNav) activeNav.classList.add('bg-cyber-accent/10', 'text-cyber-accent', 'border-r-4', 'border-cyber-accent');
+            
+            document.getElementById('current-page-title').innerText = navItems.find(i => i.id === pageId)?.label || 'War Room';
+            document.getElementById('mobile-menu').classList.add('hidden');
+            document.getElementById('mobile-menu').classList.remove('flex');
+            
+            // Cleanups
+            clearInterval(mockTimer);
+            clearInterval(speedTimer);
+            document.getElementById('active-mock-ui').classList.add('hidden');
+            document.getElementById('active-mock-ui').classList.remove('flex');
+            document.getElementById('mock-selection').classList.remove('hidden');
+
+            if(pageId === 'flashcards') initFlashcards();
         }
 
         function toggleMobileMenu() {
@@ -517,385 +556,345 @@
             menu.classList.toggle('flex');
         }
 
-        function navigate(pageId) {
-            document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
-            
-            const title = navItems.find(i => i.id === pageId)?.label || 'War Room';
-            document.getElementById('current-page-title').innerText = title;
-            document.getElementById('mobile-menu').classList.add('hidden');
-            document.getElementById('mobile-menu').classList.remove('flex');
-            window.scrollTo(0, 0);
-
-            // Cleanup active exams if navigating away
-            if(pageId !== 'mock-exam') clearInterval(mockInterval);
-            if(pageId !== 'speed') clearInterval(speedInterval);
-        }
-
-        function buildNav() {
-            const container = document.getElementById('nav-links');
-            const mobileContainer = document.getElementById('mobile-menu');
-            
-            navItems.forEach(item => {
-                const btnHtml = `<button onclick="navigate('${item.id}')" class="w-full flex items-center gap-3 px-4 py-3 rounded text-slate-400 hover:bg-slate-800 hover:text-white transition-colors text-left font-semibold">
-                    <i data-lucide="${item.icon}" class="w-5 h-5"></i> ${item.label}
-                </button>`;
-                container.innerHTML += btnHtml;
-                mobileContainer.innerHTML += btnHtml;
-            });
-        }
-
-        function updateDashboard() {
-            const s = state.stats;
-            const acc = s.answered > 0 ? Math.round((s.correct / s.answered) * 100) : 0;
-            document.getElementById('stat-accuracy').innerText = `${acc}%`;
-            document.getElementById('stat-completed').innerText = s.answered;
-            document.getElementById('stat-best-mock').innerText = s.bestMock > 0 ? `${s.bestMock}%` : '-';
-
-            let weakest = 'None', lowest = 100;
-            for(let [topic, [corr, tot]] of Object.entries(state.topicData)) {
-                if(tot > 3) {
-                    let perc = corr/tot;
-                    if(perc < lowest) { lowest = perc; weakest = topic; }
+        // --- 4. DASHBOARD LOGIC ---
+        function startCountdown() {
+            const target = new Date("Sep 12, 2026 09:30:00").getTime();
+            setInterval(() => {
+                const now = new Date().getTime();
+                const diff = target - now;
+                if (diff < 0) {
+                    document.getElementById("countdown").innerHTML = "00:00:00:00";
+                    return;
                 }
-            }
-            document.getElementById('stat-weakest').innerText = weakest;
+                const d = Math.floor(diff / (1000 * 60 * 60 * 24)).toString().padStart(2, '0');
+                const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0');
+                const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
+                const s = Math.floor((diff % (1000 * 60)) / 1000).toString().padStart(2, '0');
+                document.getElementById("countdown").innerHTML = `${d}:${h}:${m}:${s}`;
+            }, 1000);
         }
 
-        // --- PRACTICE MODE ---
-        let pQueue = [];
-        let pIdx = 0;
-
-        function startPractice() {
-            const topic = document.getElementById('p-topic').value;
-            const priority = document.getElementById('p-priority').value;
-            
-            pQueue = questionBank.filter(q => {
-                if(topic !== 'all' && q.topic !== topic) return false;
-                if(priority === 'high' && q.priority !== 1) return false;
-                return true;
-            });
-
-            if(pQueue.length === 0) return alert("No questions match these filters.");
-            
-            pQueue.sort(() => Math.random() - 0.5); // Shuffle
-            pIdx = 0;
-            
-            document.getElementById('practice-filters').classList.add('hidden');
-            document.getElementById('practice-area').classList.remove('hidden');
-            renderPracticeQ();
+        function updateDashboardStats() {
+            const acc = state.stats.answered > 0 ? Math.round((state.stats.correct / state.stats.answered) * 100) : 0;
+            document.getElementById('stat-accuracy').innerText = `${acc}%`;
+            document.getElementById('stat-completed').innerText = state.stats.answered;
+            document.getElementById('stat-mocks').innerText = state.stats.mocks;
+            document.getElementById('stat-speed').innerText = state.stats.speedHigh;
         }
 
-        function renderPracticeQ() {
-            const q = pQueue[pIdx];
-            const diffMap = {1: 'Easy', 2: 'Medium', 3: 'Hard'};
+        // --- 5. FLASHCARD ENGINE ---
+        let currentFCIndex = 0;
+        let activeFCs = [];
+
+        function initFlashcards() {
+            const cat = document.getElementById('flashcard-category').value;
+            activeFCs = cat === 'all' ? [...flashcardsDB] : flashcardsDB.filter(c => c.t === cat);
+            activeFCs.sort(() => Math.random() - 0.5);
+            currentFCIndex = 0;
+            updateFlashcardUI();
+        }
+
+        document.getElementById('flashcard-category').addEventListener('change', initFlashcards);
+
+        function updateFlashcardUI() {
+            if(activeFCs.length === 0) return;
+            const card = activeFCs[currentFCIndex];
+            document.getElementById('fc-question').innerText = card.q;
+            document.getElementById('fc-answer').innerText = card.a;
+            document.getElementById('fc-current').innerText = currentFCIndex + 1;
+            document.getElementById('fc-total').innerText = activeFCs.length;
+            document.getElementById('flashcard-inner').classList.remove('flipped');
+        }
+
+        function flipCard() { document.getElementById('flashcard-inner').classList.toggle('flipped'); }
+        function nextFlashcard() {
+            currentFCIndex++;
+            if(currentFCIndex >= activeFCs.length) currentFCIndex = 0;
+            updateFlashcardUI();
+        }
+
+        // --- 6. PRACTICE QUIZ ENGINE ---
+        let currentQuiz = [];
+        let qIndex = 0;
+
+        function startPracticeSession() {
+            const topic = document.getElementById('quiz-filter-topic').value;
+            let pool = topic === 'all' ? [...questionDB] : questionDB.filter(q => q.t === topic);
             
-            document.getElementById('pr-progress').innerText = `Q: ${pIdx + 1}/${pQueue.length}`;
-            document.getElementById('pr-diff').innerText = diffMap[q.diff];
-            document.getElementById('pr-topic').innerText = q.topic;
-            document.getElementById('pr-q-text').innerText = q.text;
+            pool.sort(() => Math.random() - 0.5);
+            currentQuiz = pool.slice(0, 10);
+            qIndex = 0;
             
-            const optContainer = document.getElementById('pr-options');
+            document.getElementById('quiz-engine').classList.remove('hidden');
+            renderQuizQuestion();
+        }
+
+        function renderQuizQuestion() {
+            const q = currentQuiz[qIndex];
+            document.getElementById('quiz-progress').innerText = `Question ${qIndex + 1} of ${currentQuiz.length}`;
+            document.getElementById('quiz-topic-badge').innerText = q.t;
+            document.getElementById('quiz-question').innerText = q.q;
+            
+            const optContainer = document.getElementById('quiz-options');
             optContainer.innerHTML = '';
             
-            q.options.forEach((opt, idx) => {
+            // Secure Shuffle: bind correct index before shuffling
+            let optionsWithStatus = q.o.map((text, idx) => ({ text, isCorrect: idx === q.a }));
+            optionsWithStatus.sort(() => Math.random() - 0.5);
+            
+            optionsWithStatus.forEach((opt, renderIdx) => {
                 const btn = document.createElement('button');
-                btn.className = "text-left w-full p-4 bg-slate-800 border border-slate-700 rounded hover:border-cyber-accent transition text-slate-200";
-                btn.innerText = `${String.fromCharCode(65 + idx)}. ${opt.text}`;
-                btn.onclick = () => handlePracticeAnswer(opt, btn, optContainer, q);
+                btn.className = "text-left w-full p-4 bg-slate-800 border border-slate-600 rounded hover:border-cyber-accent transition text-slate-200";
+                btn.innerText = `${String.fromCharCode(65 + renderIdx)}. ${opt.text}`;
+                btn.onclick = () => checkQuizAnswer(opt.isCorrect, btn, optContainer, q);
                 optContainer.appendChild(btn);
             });
             
-            document.getElementById('pr-explanation').classList.add('hidden');
-            document.getElementById('pr-next-btn').classList.add('hidden');
+            document.getElementById('quiz-explanation').classList.add('hidden');
+            document.getElementById('quiz-next-btn').classList.add('hidden');
         }
 
-        function handlePracticeAnswer(selectedOpt, btnElement, container, qObj) {
-            Array.from(container.children).forEach(b => b.onclick = null); // disable
+        function checkQuizAnswer(isCorrect, btnElement, container, qObj) {
+            Array.from(container.children).forEach(b => b.onclick = null); // Disable all
             
             state.stats.answered++;
-            state.topicData[qObj.topic][1]++; // add total
+            state.topicScores[qObj.t][1]++; // total
             
-            if(selectedOpt.isCorrect) {
+            if(isCorrect) {
                 btnElement.classList.add('bg-cyber-green/20', 'border-cyber-green', 'text-cyber-green');
                 state.stats.correct++;
-                state.topicData[qObj.topic][0]++; // add correct
+                state.topicScores[qObj.t][0]++; // correct
             } else {
                 btnElement.classList.add('bg-cyber-red/20', 'border-cyber-red', 'text-cyber-red');
-                // Highlight correct one
-                Array.from(container.children).forEach((b, i) => {
-                    if(qObj.options[i].isCorrect) b.classList.add('border-cyber-green', 'text-cyber-green');
+                // Highlight correct
+                Array.from(container.children).forEach(b => {
+                    if(b.innerText.substring(3).trim() === qObj.o[qObj.a].trim()) {
+                        b.classList.add('border-cyber-green', 'text-cyber-green');
+                    }
                 });
-                
-                // Save mistake
-                if(!state.mistakes.includes(qObj.id)) state.mistakes.push(qObj.id);
             }
             saveState();
 
-            // Populate Explanation
-            document.getElementById('pr-exp-main').innerText = qObj.explanation;
-            document.getElementById('pr-exp-trick').innerText = qObj.trick;
-            
-            const othersDiv = document.getElementById('pr-exp-others');
-            othersDiv.innerHTML = '';
-            if(!selectedOpt.isCorrect) {
-                othersDiv.innerHTML = `<p><strong class="text-cyber-red">Why your answer is wrong:</strong> ${selectedOpt.exp}</p>`;
-            }
-            
-            document.getElementById('pr-explanation').classList.remove('hidden');
-            document.getElementById('pr-next-btn').classList.remove('hidden');
+            document.getElementById('quiz-exp-text').innerText = qObj.e;
+            document.getElementById('quiz-exam-tip').innerHTML = `<i data-lucide="zap" class="w-4 h-4 shrink-0"></i> <span>EXAM TIP: ${qObj.tip}</span>`;
+            document.getElementById('quiz-explanation').classList.remove('hidden');
+            document.getElementById('quiz-next-btn').classList.remove('hidden');
+            lucide.createIcons();
         }
 
-        function nextPracticeQ() {
-            pIdx++;
-            if(pIdx < pQueue.length) {
-                renderPracticeQ();
-            } else {
-                document.getElementById('practice-area').classList.add('hidden');
-                document.getElementById('practice-filters').classList.remove('hidden');
-                updateDashboard();
+        function nextQuizQuestion() {
+            qIndex++;
+            if(qIndex < currentQuiz.length) renderQuizQuestion();
+            else {
+                document.getElementById('quiz-engine').classList.add('hidden');
+                navigate('dashboard');
             }
         }
 
-        // --- MOCK EXAM ENGINE (50 Qs, 60 Mins) ---
-        let mQueue = [];
-        let mAnswers = [];
-        let mockInterval;
-        let mockSeconds = 3600; // 60 mins
-        let mIdx = 0;
+        // --- 7. MOCK EXAM ENGINE (50 Questions) ---
+        let mockTimer, mockTimeLeft, mockQuestions = [], mockAnswers = {}, mockFlags = {};
 
         function startMockExam() {
-            document.getElementById('mock-intro').classList.add('hidden');
-            document.getElementById('mock-active').classList.remove('hidden');
-            document.getElementById('mock-active').classList.add('flex');
+            document.getElementById('mock-selection').classList.add('hidden');
+            document.getElementById('mock-results-ui').classList.add('hidden');
+            document.getElementById('active-mock-ui').classList.remove('hidden');
+            document.getElementById('active-mock-ui').classList.add('flex');
             
-            // Build 50 Qs (For demo, we pad the array if < 50)
-            let pool = [...questionBank].sort(() => Math.random() - 0.5);
-            mQueue = pool.slice(0, 50);
-            while(mQueue.length < 50 && questionBank.length > 0) {
-                 mQueue.push(questionBank[Math.floor(Math.random()*questionBank.length)]);
-            }
+            // Generate 50 questions (padding if DB is smaller for demo purposes)
+            let pool = [...questionDB].sort(() => Math.random() - 0.5);
+            mockQuestions = pool.slice(0, 50);
+            while(mockQuestions.length < 50) mockQuestions.push(questionDB[Math.floor(Math.random()*questionDB.length)]);
             
-            mAnswers = new Array(50).fill(null);
-            mockSeconds = 3600;
-            mIdx = 0;
+            mockAnswers = {};
+            mockFlags = {};
+            mockTimeLeft = 60 * 60; // 60 mins
+            currentMockIndex = 0;
+            document.getElementById('mock-answered-count').innerText = 0;
             
-            updateMockTimer();
-            mockInterval = setInterval(() => {
-                mockSeconds--;
-                updateMockTimer();
-                if(mockSeconds <= 0) submitMockExam();
+            updateMockTimerDisplay();
+            mockTimer = setInterval(() => {
+                mockTimeLeft--;
+                updateMockTimerDisplay();
+                if(mockTimeLeft <= 0) submitMockExam();
             }, 1000);
             
-            buildMockGrid();
+            renderMockNav();
             loadMockQ(0);
         }
 
-        function updateMockTimer() {
-            const m = Math.floor(mockSeconds / 60).toString().padStart(2, '0');
-            const s = (mockSeconds % 60).toString().padStart(2, '0');
-            const timerEl = document.getElementById('mock-timer');
-            timerEl.innerHTML = `<i data-lucide="timer" class="text-cyber-accent"></i> <span>${m}:${s}</span>`;
-            lucide.createIcons();
+        function updateMockTimerDisplay() {
+            const m = Math.floor(mockTimeLeft / 60).toString().padStart(2, '0');
+            const s = (mockTimeLeft % 60).toString().padStart(2, '0');
+            const timerEl = document.getElementById('mock-timer-container');
+            document.getElementById('mock-timer').innerText = `${m}:${s}`;
 
-            // Warnings
-            if(mockSeconds < 900) { timerEl.classList.add('text-cyber-warning'); timerEl.classList.remove('text-white'); }
-            if(mockSeconds < 300) { timerEl.classList.add('text-cyber-red', 'pulse-warning'); }
+            if(mockTimeLeft < 900) timerEl.classList.replace('text-white', 'text-cyber-warning'); // 15 mins
+            if(mockTimeLeft < 300) timerEl.classList.replace('text-cyber-warning', 'text-cyber-red'); // 5 mins
 
             // Pace calculation
-            const elapsed = 3600 - mockSeconds;
-            const ansCount = mAnswers.filter(x => x !== null).length;
+            const elapsed = 3600 - mockTimeLeft;
+            const ansCount = Object.keys(mockAnswers).length;
             if(ansCount > 0) {
                 const pace = Math.round(elapsed / ansCount);
-                const pEl = document.getElementById('mock-pace-warning');
+                const pEl = document.getElementById('mock-pace');
                 pEl.innerText = `Pace: ${pace}s/Q`;
                 pEl.className = `hidden sm:block text-xs font-mono ${pace > 75 ? 'text-cyber-red' : 'text-slate-500'}`;
             }
         }
 
-        function buildMockGrid() {
-            const grid = document.getElementById('mock-nav-grid');
-            grid.innerHTML = '';
+        function renderMockNav() {
+            const nav = document.getElementById('mock-q-nav');
+            nav.innerHTML = '';
             for(let i=0; i<50; i++) {
                 const btn = document.createElement('button');
-                btn.id = `m-btn-${i}`;
-                btn.className = "w-full aspect-square flex items-center justify-center text-xs font-bold rounded bg-slate-800 text-slate-400 hover:bg-slate-700";
-                btn.innerText = i+1;
+                btn.className = "w-full aspect-square rounded text-xs font-bold bg-slate-800 text-slate-400 hover:bg-slate-700 flex items-center justify-center transition";
+                btn.innerText = i + 1;
                 btn.onclick = () => loadMockQ(i);
-                grid.appendChild(btn);
+                btn.id = `mock-nav-btn-${i}`;
+                nav.appendChild(btn);
             }
         }
-
+        
+        let currentMockIndex = 0;
         function loadMockQ(index) {
-            mIdx = index;
-            const q = mQueue[index];
+            currentMockIndex = index;
+            const q = mockQuestions[index];
             document.getElementById('mock-q-num').innerText = `${index + 1}/50`;
-            document.getElementById('mock-q-text').innerText = q.text;
+            document.getElementById('mock-q-text').innerText = q.q;
             
-            // Handle Review Flag styling
-            const revBtn = document.getElementById('mock-review-btn');
-            if(document.getElementById(`m-btn-${index}`).classList.contains('border-cyber-warning')) {
-                revBtn.classList.replace('text-slate-500', 'text-cyber-warning');
-            } else {
-                revBtn.classList.replace('text-cyber-warning', 'text-slate-500');
-            }
+            // Flag UI
+            const flagBtn = document.getElementById('mock-flag-btn');
+            if(mockFlags[index]) flagBtn.classList.replace('text-slate-500', 'text-cyber-warning');
+            else flagBtn.classList.replace('text-cyber-warning', 'text-slate-500');
 
             const optContainer = document.getElementById('mock-q-options');
             optContainer.innerHTML = '';
-            q.options.forEach((opt, i) => {
-                const isSelected = mAnswers[index] === i;
-                const div = document.createElement('div');
-                div.className = `p-4 border rounded cursor-pointer transition ${isSelected ? 'bg-cyber-accent/10 border-cyber-accent text-white' : 'bg-slate-800 border-slate-700 text-slate-300 hover:border-slate-500'}`;
-                div.innerText = `${String.fromCharCode(65 + i)}. ${opt.text}`;
-                div.onclick = () => selectMockAnswer(index, i);
-                optContainer.appendChild(div);
-            });
-            updateGridColors();
-        }
-
-        function selectMockAnswer(qIdx, optIdx) {
-            mAnswers[qIdx] = optIdx;
-            document.getElementById('mock-answered-count').innerText = mAnswers.filter(x => x !== null).length;
-            loadMockQ(qIdx); // re-render to show selection
-        }
-
-        function toggleMockReview() {
-            const btn = document.getElementById(`m-btn-${mIdx}`);
-            btn.classList.toggle('border-2');
-            btn.classList.toggle('border-cyber-warning');
-            loadMockQ(mIdx); // Update top right button color
-        }
-
-        function updateGridColors() {
-            for(let i=0; i<50; i++) {
-                const btn = document.getElementById(`m-btn-${i}`);
-                if(i === mIdx) {
-                    btn.style.boxShadow = "0 0 0 2px #f3f4f6";
-                } else {
-                    btn.style.boxShadow = "none";
-                }
+            
+            // Secure Shuffle
+            let optionsWithOriginalIdx = q.o.map((text, idx) => ({ text, origIdx: idx }));
+            // To ensure consistency when returning to a question, we seed the shuffle based on the question text (simple hash)
+            // For this implementation, we will keep them unshuffled in mock mode to prevent confusion when returning, OR we store the shuffle map.
+            // Simplified safe approach: Keep original order in Mock to prevent index drift on return.
+            
+            optionsWithOriginalIdx.forEach((opt, renderIdx) => {
+                const checked = mockAnswers[index] === opt.origIdx ? 'bg-cyber-accent/10 border-cyber-accent text-white' : 'bg-slate-800 border-slate-700 text-slate-300';
                 
-                if(mAnswers[i] !== null) {
+                optContainer.innerHTML += `<div class="p-4 border rounded cursor-pointer transition hover:border-slate-500 ${checked}" onclick="saveMockAnswer(${index}, ${opt.origIdx})">
+                    ${String.fromCharCode(65 + renderIdx)}. ${opt.text}
+                </div>`;
+            });
+            updateNavColors();
+        }
+
+        function saveMockAnswer(qIndex, originalOptIndex) {
+            mockAnswers[qIndex] = originalOptIndex;
+            document.getElementById('mock-answered-count').innerText = Object.keys(mockAnswers).length;
+            loadMockQ(qIndex); // Re-render to show selection
+        }
+
+        function toggleMockFlag() {
+            mockFlags[currentMockIndex] = !mockFlags[currentMockIndex];
+            loadMockQ(currentMockIndex);
+        }
+
+        function updateNavColors() {
+            for(let i=0; i<50; i++) {
+                const btn = document.getElementById(`mock-nav-btn-${i}`);
+                btn.className = "w-full aspect-square rounded text-xs font-bold flex items-center justify-center transition";
+                
+                if (i === currentMockIndex) btn.classList.add('ring-2', 'ring-white');
+                
+                if (mockFlags[i]) {
+                    btn.classList.add('bg-cyber-warning', 'text-slate-900');
+                } else if (mockAnswers[i] !== undefined) {
                     btn.classList.add('bg-cyber-accent', 'text-slate-900');
-                    btn.classList.remove('bg-slate-800', 'text-slate-400');
+                } else {
+                    btn.classList.add('bg-slate-800', 'text-slate-400');
                 }
             }
         }
 
-        function nextMock() { if(mIdx < 49) loadMockQ(mIdx + 1); }
-        function prevMock() { if(mIdx > 0) loadMockQ(mIdx - 1); }
+        function nextMockQ() { if(currentMockIndex < 49) loadMockQ(currentMockIndex + 1); }
+        function prevMockQ() { if(currentMockIndex > 0) loadMockQ(currentMockIndex - 1); }
 
         function confirmSubmitMock() {
-            const unans = mAnswers.filter(x => x === null).length;
-            if(unans > 0) {
-                if(!confirm(`You have ${unans} unanswered questions. Submit anyway?`)) return;
-            }
+            const unans = 50 - Object.keys(mockAnswers).length;
+            if(unans > 0 && !confirm(`You have ${unans} unanswered questions. Submit anyway?`)) return;
             submitMockExam();
         }
 
         function submitMockExam() {
-            clearInterval(mockInterval);
-            document.getElementById('mock-active').classList.add('hidden');
-            document.getElementById('mock-active').classList.remove('flex');
-            document.getElementById('mock-results').classList.remove('hidden');
-
-            let correct = 0;
-            let topicResults = {};
+            clearInterval(mockTimer);
+            document.getElementById('active-mock-ui').classList.add('hidden');
+            document.getElementById('active-mock-ui').classList.remove('flex');
+            document.getElementById('mock-results-ui').classList.remove('hidden');
             
-            mQueue.forEach((q, i) => {
-                if(!topicResults[q.topic]) topicResults[q.topic] = {c:0, t:0};
-                topicResults[q.topic].t++;
-                
-                const selectedOptIdx = mAnswers[i];
-                if(selectedOptIdx !== null && q.options[selectedOptIdx].isCorrect) {
-                    correct++;
-                    topicResults[q.topic].c++;
-                }
+            let correct = 0;
+            mockQuestions.forEach((q, i) => {
+                if(mockAnswers[i] === q.a) correct++;
             });
-
+            
             const perc = Math.round((correct / 50) * 100);
-            if(perc > state.stats.bestMock) state.stats.bestMock = perc;
+            document.getElementById('mock-score-display').innerText = `${perc}%`;
+            document.getElementById('mock-score-text').innerText = `${correct} / 50 Correct`;
+            
+            const used = 3600 - mockTimeLeft;
+            document.getElementById('mock-res-time').innerText = `${Math.floor(used/60)}m ${used%60}s`;
+            const ansCount = Object.keys(mockAnswers).length;
+            document.getElementById('mock-res-pace').innerText = ansCount > 0 ? `${Math.round(used/ansCount)}s` : '0s';
+            document.getElementById('mock-res-unans').innerText = 50 - ansCount;
+            
             state.stats.mocks++;
             saveState();
-
-            document.getElementById('res-score-perc').innerText = `${perc}%`;
-            document.getElementById('res-score-raw').innerText = correct;
-            
-            const used = 3600 - mockSeconds;
-            const m = Math.floor(used/60);
-            const s = used%60;
-            document.getElementById('res-time').innerText = `${m}m ${s}s`;
-            
-            const ansCount = mAnswers.filter(x=>x!==null).length;
-            document.getElementById('res-pace').innerText = ansCount > 0 ? `${Math.round(used/ansCount)}s` : '0s';
-            document.getElementById('res-unans').innerText = 50 - ansCount;
-            
-            const statusEl = document.getElementById('res-status');
-            if(perc >= 70) { statusEl.innerText = "EXCELLENT"; statusEl.className = "text-lg font-bold text-cyber-green"; }
-            else if(perc >= 50) { statusEl.innerText = "PASS"; statusEl.className = "text-lg font-bold text-cyber-accent"; }
-            else { statusEl.innerText = "FAIL"; statusEl.className = "text-lg font-bold text-cyber-red"; }
-
-            // Render Topic breakdown
-            const tContainer = document.getElementById('res-topics');
-            tContainer.innerHTML = '';
-            for(let t in topicResults) {
-                const tr = topicResults[t];
-                const tPerc = Math.round((tr.c/tr.t)*100);
-                tContainer.innerHTML += `<div class="bg-slate-900 p-4 border border-slate-800 rounded flex justify-between items-center">
-                    <span class="text-slate-300 font-semibold">${t}</span>
-                    <span class="font-mono ${tPerc < 50 ? 'text-cyber-red' : 'text-cyber-accent'}">${tPerc}% (${tr.c}/${tr.t})</span>
-                </div>`;
-            }
         }
 
-
-        // --- SPEED CHALLENGE (60s strict) ---
-        let speedTimer;
-        let speedSecs = 60;
-        let speedScore = 0;
-        let sQueue = [];
+        // --- 8. SPEED CHALLENGE (60s Survival) ---
+        let speedTimer, speedSecs = 60, speedScore = 0, sQueue = [];
 
         function startSpeedChallenge() {
             document.getElementById('speed-intro').classList.add('hidden');
             document.getElementById('speed-results').classList.add('hidden');
             document.getElementById('speed-active').classList.remove('hidden');
             
-            sQueue = [...questionBank].sort(() => Math.random() - 0.5);
+            sQueue = [...questionDB].sort(() => Math.random() - 0.5);
             speedScore = 0;
             document.getElementById('speed-progress').innerText = `Score: 0`;
-            
             nextSpeedQ();
         }
 
         function nextSpeedQ() {
-            if(sQueue.length === 0) return endSpeedChallenge(); // beat the whole bank
+            if(sQueue.length === 0) return endSpeedChallenge();
             
             speedSecs = 60;
-            updateSpeedUI();
+            document.getElementById('speed-timer-text').innerText = speedSecs;
             clearInterval(speedTimer);
             
-            // Animation reset trick
+            // Reset Animation
             const bar = document.getElementById('speed-bar');
             bar.style.transition = 'none';
             bar.style.width = '100%';
-            bar.offsetHeight; // trigger reflow
+            bar.offsetHeight; // reflow
             bar.style.transition = 'width 60s linear';
             bar.style.width = '0%';
 
             speedTimer = setInterval(() => {
                 speedSecs--;
-                document.getElementById('speed-timer').innerText = speedSecs;
+                document.getElementById('speed-timer-text').innerText = speedSecs;
                 if(speedSecs <= 0) endSpeedChallenge();
             }, 1000);
 
             const q = sQueue.pop();
-            document.getElementById('sp-q-text').innerText = q.text;
+            document.getElementById('speed-q-text').innerText = q.q;
             
-            const optContainer = document.getElementById('sp-options');
+            const optContainer = document.getElementById('speed-options');
             optContainer.innerHTML = '';
-            q.options.forEach((opt, idx) => {
+            
+            let optionsWithStatus = q.o.map((text, idx) => ({ text, isCorrect: idx === q.a }));
+            optionsWithStatus.sort(() => Math.random() - 0.5);
+            
+            optionsWithStatus.forEach((opt, idx) => {
                 const btn = document.createElement('button');
-                btn.className = "text-left w-full p-4 bg-slate-800 border border-slate-700 rounded hover:border-cyber-accent transition text-slate-200";
+                btn.className = "text-left w-full p-4 bg-slate-800 border border-slate-600 rounded hover:border-cyber-accent transition text-slate-200";
                 btn.innerText = `${String.fromCharCode(65 + idx)}. ${opt.text}`;
                 btn.onclick = () => {
                     if(opt.isCorrect) {
@@ -910,10 +909,6 @@
             });
         }
 
-        function updateSpeedUI() {
-            document.getElementById('speed-timer').innerText = speedSecs;
-        }
-
         function endSpeedChallenge() {
             clearInterval(speedTimer);
             document.getElementById('speed-bar').style.transition = 'none';
@@ -925,12 +920,52 @@
             saveState();
         }
 
+        // --- 9. QUICK REVISION DATA ---
+        const quickRevData = [
+            { t: "CIA Triad", content: "Confidentiality, Integrity, Availability." },
+            { t: "Encoding vs Encrypt", content: "Encoding (Base64) = No Key. Encrypt (AES) = Key needed." },
+            { t: "SQLi vs XSS", content: "SQLi = executes in Database. XSS = executes in Victim Browser." },
+            { t: "TCP vs UDP", content: "TCP = reliable, handshake (SYN, SYN-ACK, ACK). UDP = fast, dropped packets ok." }
+        ];
+
+        function build100Things() {
+            const revContainer = document.getElementById('quick-rev-cards');
+            quickRevData.forEach(r => {
+                revContainer.innerHTML += `<div class="bg-slate-800 p-4 border border-slate-700 rounded"><h4 class="font-bold text-cyber-accent text-sm mb-1">${r.t}</h4><p class="text-sm text-slate-300">${r.content}</p></div>`;
+            });
+
+            const things = [
+                "1. TCP handshake order: SYN → SYN-ACK → ACK.",
+                "2. Port 22 = SSH, 23 = Telnet, 53 = DNS, 80 = HTTP, 443 = HTTPS.",
+                "3. MAC address = Layer 2 (physical); IP address = Layer 3 (logical).",
+                "4. Private IPs: 10.x.x.x, 172.16-31.x.x, 192.168.x.x.",
+                "5. Authentication = who you are; Authorization = what you can do.",
+                "6. Zero-day = vulnerability with no patch yet.",
+                "7. Brute force = ALL combos; Dictionary = wordlist; Spraying = few passwords, many accounts.",
+                "8. SQLi targets database; XSS targets victim's browser.",
+                "9. CSRF abuses automatic cookie-sending.",
+                "10. 401 = unauthorized; 403 = forbidden.",
+                "11. Base64 is encoding (reversible, no key).",
+                "12. Hashing (SHA-256) is irreversible. Salt defeats rainbow tables.",
+                "13. Symmetric encryption = one shared key (AES).",
+                "14. Asymmetric encryption = public/private key pair (RSA).",
+                "15. chmod 755 = rwxr-xr-x. 4=read, 2=write, 1=execute.",
+                "16. 'strings' command extracts readable text from binary.",
+                "17. 'file' command identifies true type via magic bytes.",
+                "18. PNG magic bytes: 89 50 4E 47.",
+                "19. PDF magic bytes: 25 50 44 46 (%PDF).",
+                "20. Watch for ALWAYS/NEVER absolute wording in MCQs."
+            ];
+            const list = document.getElementById('hundred-things-list');
+            things.forEach(t => {
+                list.innerHTML += `<div class="py-2 border-b border-slate-800 hover:text-cyber-accent transition cursor-default">${t}</div>`;
+            });
+        }
+
         // Initialize App
         window.onload = () => {
-            initData();
-            buildNav();
-            updateDashboard();
-            navigate('dashboard');
+            loadState();
+            initNav();
         };
     </script>
 </body>
